@@ -7,7 +7,7 @@ read_teta<-function(name=0,
                     pfad=path,
                     a0=1.3,
                     a1=7.8,
-                    offset=c(0,0,0,0),
+                    offset=c(0.03597042,0.03995589,0.04884653,0.01169276),
                     long_format=T){
 tetas<-read.csv(paste0(pfad,name,".dat"),header = F)
 tiefen<-tetas[,5:8]/1000
@@ -29,48 +29,11 @@ if(long_format==T){
   tiefe<-rep(tiefenstufe,each=length(theta$date))
   theta<-data.frame(date=date,theta=bf,tiefe=tiefe)
   theta<-theta[theta$theta<2,]
+  theta<-theta[!is.na(theta$tiefe),]
+  dopplungen<-which(diff(theta$date)==0)
+  if(length(dopplungen)!=0){
+  theta<-theta[-(dopplungen+1),]}
 }
+
 return(theta)
 }
-
-
-#####################################################
-#files laden
-path<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/vorbereitung/"
-bf_cal<-read.csv2(paste0(path,"bf_cal.csv"))
-luft<-read_teta("luft")
-cal<-read_teta("cal")
-path<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/feuchte/"
-bf_09.10<-read_teta("bf_09.10")
-bf_long<-read_teta("bf_09.10",long_format = T)
-bf_long.2<-read_teta("bf_09.10.2",long_format = T)
-
-summary(bf_long.2)
-library(ggplot2)
-ggplot(bf_long.2,aes(date,theta,col=as.factor(tiefe)))+
-  geom_line()+theme_classic()
-test<-matrix(1:9,3,3)
-as.integer(test)
-matplot(bf_09.10[1000:1625,1:4],ylim=c(0,.5),type="l")
-#################################################
-#kalibrierung
-
-V<-bf_cal[,3:6]/1000
-eps<-1+6.19*V-9.72*V^2+24.35*V^3-30.84*V^4+14.73*V^5
-eps[,4]<-1.07+6.4*V[,4]-6.4*V[,4]^2+4.7*V[,4]^3
-a0<-1.3
-a1<-7.8
-theta<-(eps-a0)/a1
-matplot(theta)
-points(1:4,bf_cal$teta/100)
-diff<-bf_cal$teta/100-theta
-diffs<-apply(diff,2,mean)
-
-matpoints(1:4,t((diffs)+t(theta)),pch=20)
-
-
-#############################
-#plots
-
-matplot()
-
