@@ -13,20 +13,30 @@ q_15.10<-read_waage("15.10",start = "09:21",mov_avg = 5)
 okt10<-read_all("10.10",q=F)
 
 okt15<-read_all("15.10","09:21")
-tiefe2_15.10<-read_vaisala("tiefe2_15.10.2",co2pfad,aggregate = T,temp_line = 31,Sonde=2)
+tiefe2_15.10<-read_vaisala("tiefe2_15.10.2","C:/Users/ThinkPad/Documents/Masterarbeit/daten/co2/",aggregate = T,temp_line = 31,Sonde=2)
 okt15<-merge(okt15,tiefe2_15.10,all=T)
 okt15<-subset(okt15,date>="2018-10-15 09:06:31 CEST")
 
+okt18<-read_all("18.10",q=F,lf=F)
+
+all<-rbind(okt10[,1:6],okt15[,1:6],okt18)
 event_10.10<-event("10.10","11:15","14:10",881.5)
 event_15.10<-event("15.10","09:31","17:23",1267.2-380.6)
 event_18.10<-event("18.10","09:37","12:33",1234.6-357.1)
 
+event_all<-rbind(event_10.10,event_15.10,event_18.10)
 
 ###############################################################
 #plots
 
-plot_all(okt15,event_15.10)
 plot_all(okt10,event_10.10)
+plot_all(okt15,event_15.10)
+plot_all(okt18,event_18.10)
+
+
+
+plot_all(all,event_all,point = T)
+
 
 
 ggplot(okt10,aes(theta,CO2_raw,col=as.factor(tiefe)))+geom_point()
