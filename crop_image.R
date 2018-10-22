@@ -12,4 +12,4 @@ if((i/length(files)*100)%%10==0){
 print(paste(i/length(files)*100,"% complete"))}
 }
 }
-crop.waage("10.10")
+crop.waage("1x.10")

@@ -1,4 +1,4 @@
-plot_all<-function(data,event,save=F,name,height=9,width=7,point=F){
+plot_all<-function(data,event,name=NULL,height=9,width=7,point=F){
   library(ggplot2)
   library(gridExtra)
   library(grid)
@@ -18,11 +18,12 @@ plot_all<-function(data,event,save=F,name,height=9,width=7,point=F){
       co2_plot<-co2_plot+
         geom_line(data=subset(data,!is.na(CO2)),aes(x=date,y=CO2_raw,col=as.factor(tiefe)))
       }
-  leg_15.10<-get_legend(co2_plot)
+  leg<-get_legend(co2_plot)
   
   co2_plot<-co2_plot+theme(legend.position = "none")
+  p<-co2_plot
   
-  
+  if(length(data$theta)!=0){   
   bf_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
     labs(y=expression(theta*"  [VOl %]"),x="",col="tiefe")+
@@ -37,6 +38,7 @@ plot_all<-function(data,event,save=F,name,height=9,width=7,point=F){
     }
   
   p<-plot_grid(co2_plot,bf_plot,align = "v",ncol=1,rel_heights = c(2,1))
+  }
   
   if(length(data$lf)!=0){  
     lf_plot<-ggplot()+
@@ -62,13 +64,13 @@ plot_all<-function(data,event,save=F,name,height=9,width=7,point=F){
   p<-plot_grid(co2_plot,bf_plot,q_plot,lf_plot,align = "v",ncol=1,rel_heights = c(2,1,1,1))
   }
   
-  if(save==T){
+  if(!is.null(name)){
     plotpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/abbildungen/plots/"
     
     pdf(paste0(plotpfad,name,".pdf"),width = width,height = height)
-      grid.arrange(p,leg_15.10,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA)))
+      grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA)))
     dev.off()
   }else{
-  return(grid.arrange(p,leg_15.10,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA))))
+  return(grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA))))
 }
 }
