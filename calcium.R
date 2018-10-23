@@ -1,3 +1,5 @@
+source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")
+
 library(readxl)
 library(stringr)
 capath<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/ca/"
@@ -23,3 +25,15 @@ rsq<-(1-cafm$deviance/cafm$null.deviance)*100
 text(170,60,paste("R² = ",round(rsq,2)))
 save(cafm,file=paste0(capath,"cafm.R"))
      
+ic$tiefenstufe<-ic$tiefe
+ic$tiefe<-ifelse(ic$tiefenstufe==5,-17,-(ic$tiefenstufe*4-2))
+
+ints<-event()
+ints$datum<-format(ints$start,"%d.%m")
+ic<-merge(ic,ints[,5:6])
+
+library(ggplot2)
+ggplot()+
+  geom_path(data=ic,aes(ca,tiefe,col=as.factor(round(rain_mm_h))))+
+  labs(x=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),y="tiefe [cm]",col=expression("Intensität [mm*h"^{-1}*"]"))+theme_classic()
+

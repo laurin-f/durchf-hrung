@@ -1,9 +1,21 @@
-event<-function(datum,start,stop,wassermenge){
+###############################################
+#Funktion um die Events zu speichern
+
+event<-function(pfad="C:/Users/ThinkPad/Documents/Masterarbeit/daten/events/"){
+  #packege für datumsformatierung
   library(lubridate)
-  event<-data.frame(start=parse_date_time(paste0(2018,datum,start),"ydmHM",tz="CET"),stop=parse_date_time(paste0(2018,datum,stop),"ydmHM",tz="CET"))
-  event$rain_ml_min<-wassermenge/(as.numeric(event$stop-event$start)*60)#ml/min
+  #package um .xlsx dateien  einzulesen
+  library(readxl)
+  #einlesen der eventstabelle
+  event<-read_xlsx(paste0(pfad,"events.xlsx"))
+  #ändern der Timezone, da default = UTC
+  event$start<-ymd_hms(event$start,tz="CET")
+  event$stop<-ymd_hms(event$stop,tz="CET")
+  #berechnen der minütlichen Wassermenge
+  event$rain_ml_min<-event$wassermenge/(as.numeric(event$stop-event$start)*60)#ml/min
   r<-7.5/100#m Radius
   A<-pi*r^2#m2 area
-  event$rain_mm_h<-event$rain_ml_min/1000*60/A
+  #berechnung der intensität in mm/h
+  event$rain_mm_h<-event$rain_ml_min/1000*60/A#mm/h
   return(event)
 }
