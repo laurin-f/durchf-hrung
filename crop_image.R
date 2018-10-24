@@ -27,4 +27,4 @@ for (i in 1:length(files)){
 }#ende funktion
 
 #anwenden der Funktion
-crop.waage("1x.10")
+crop.waage("2x.10")

@@ -29,7 +29,7 @@ ic$tiefenstufe<-ic$tiefe
 ic$tiefe<-ifelse(ic$tiefenstufe==5,-17,-(ic$tiefenstufe*4-2))
 
 ints<-event()
-ints$datum<-format(ints$start,"%d.%m")
+
 ic<-merge(ic,ints[,5:6])
 
 library(ggplot2)

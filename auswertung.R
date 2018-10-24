@@ -29,14 +29,16 @@ okt18<-read_all(datum="18.10",start = "09:30")
 all<-rbind(okt10[,1:6],okt15[,1:6],okt18[,1:6])
 okt1518<-rbind(okt15[,1:6],okt18[,1:6])
 
+
 events<-event()
-events$datum<-format(events$start,"%d.%m")
+
+
 ###############################################################
 #plots
 
 plot_all(okt10)
-plot_all(okt15,name="15.10_int50mm8h",height = 9)
-plot_all(okt18,name="18.10_int50mm3h",height = 9)
+plot_all(okt15)#,name="15.10_int50mm8h",height = 9)
+plot_all(okt18)#,name="18.10_int50mm3h",height = 9)
 plot_all(okt18[1:5])
 
 plot_all(all,point = F)

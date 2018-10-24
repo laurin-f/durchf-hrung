@@ -17,5 +17,6 @@ event<-function(pfad="C:/Users/ThinkPad/Documents/Masterarbeit/daten/events/"){
   A<-pi*r^2#m2 area
   #berechnung der intensität in mm/h
   event$rain_mm_h<-event$rain_ml_min/1000*60/A#mm/h
+  event$datum<-format(events$start,"%d.%m")
   return(event)
 }
