@@ -24,7 +24,7 @@ okt15<-subset(okt15,date>="2018-10-15 09:06:31 CEST")
 
 okt18<-read_all(datum="18.10",start = "09:30")
 
-#okt22<-read_all(datum="22.10",start = "13:36")
+okt22<-read_all(datum="22.10",start = "13:36")
 
 all<-rbind(okt10[,1:6],okt15[,1:6],okt18[,1:6])
 okt1518<-rbind(okt15[,1:6],okt18[,1:6])
@@ -40,6 +40,8 @@ plot_all(okt10)
 plot_all(okt15)#,name="15.10_int50mm8h",height = 9)
 plot_all(okt18)#,name="18.10_int50mm3h",height = 9)
 plot_all(okt18[1:5])
+plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
+head(okt22[,1:6])
 
 plot_all(all,point = F)
 plot_all(okt1518,point = F)#,name = "int50mm3h&50mm8h")
@@ -69,3 +71,6 @@ okt18$ca_conc[okt18$ca_conc<0]<-0
 okt18$ca_mg<-okt18$ca_conc*okt18$q/1000#mg/l*ml/min<-mg
 
 sum(okt18$ca_mg,na.rm = T)/max(okt18$wasser,na.rm = T)*1000
+
+
+

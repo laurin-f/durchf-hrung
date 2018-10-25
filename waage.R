@@ -1,12 +1,12 @@
 ##############################################################
 #Funktion um Durchflussdaten der untersten Saugkerze einzulesen
 #und mit dem Datum des dazugehörigen Fotos zu verknüpfen
-
 read_waage<-function(datum,#datum der Messung
                      start,#zeitpunkt an dem Kamera eingeschaltet wurde
-                     pfad=NULL,#dateipfad wenn NULL wird defaultpfad benutzt
-                     mov_avg=5){#zellenweite des gleitenden mittels bei 5 also zwei zellen in beide richtungen
-  
+                     q_filter=3,##zellenweite des gleitenden mittels für q, wenn na_interpolation TRUE dann entspricht 3 ein Zeitfenster von 30 Minuten nach vorne und hinten
+                     na_interpolation=T,#sollen zwischen die 30 minütigen Werte minütliche Werte interpoliert werden dann TRUE
+                     pfad=NULL){#dateipfad wenn NULL wird defaultpfad benutzt
+
 library(exiftoolr)#package um exif metadaten der Fotos einzulesen
 library(lubridate)#package um das datum zu formatieren
   
@@ -57,8 +57,26 @@ wasser<-gewicht-flasche
 #berechnung des Abflusses als änderungsrate des gewichts pro zeitschritt
 #Einheit = ml/min
 q<-c(0,ifelse(diff(wasser)>0,diff(wasser)/as.numeric(diff(date)),0))
-#gleitendes Mittel des Abflusses um die Kurve zu glätten
-q<-as.numeric(filter(q,rep(1/mov_avg,mov_avg)))
+#der erste q-Wert nach Zeitlücken über 2h wird entfernt 
+q<-ifelse(c(0,as.numeric(diff(date)))>3*60,NA,q)
 
+#Datensatz mit allen Werten
+q<-data.frame(id=id,date=date,q=q,wasser=wasser)
+
+#runden der Datumsspalte auf Minutenwerte
+q$date<-round_date(q$date,unit = "min")
+
+if(na_interpolation==T){
+  q_filter<-(q_filter-1)*30+1
+#erstellen einer durchgeheden Zeitsequenz mit Minutenwerten 
+qmin<-data.frame(date=seq(min(q$date),max(q$date),60))
+#zusammenführen der Abflusswerte und der Minutensequenz
+q<-merge(qmin,q,all.x=T)
+
+#interpolation der Fehlwerte um minütliche Abflusswerte zu erhalten
+q$q<-na.approx(q$q)
+}
+#gleitendes Mittel des Abflusses um die Kurve zu glätten
+q$q<-zoo::rollapply(q$q, q_filter, mean, na.rm = T, fill=NA)
 #ausgeben des Datensatzes
-return(data.frame(id=id,date=date,q=q,wasser=wasser))}
+return(q)}

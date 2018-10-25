@@ -4,6 +4,7 @@
 read_all<-function(datum,#datum des Versuchs
                    start,##zeitpunkt an dem Kamera eingeschaltet wurde
                    qs=T,#sind abflusswerte nicht verfügbar qs=F einstellen 
+                   q_filter=3,#zellenweite des gleitenden mittels für q
                    lfs=T){#sind Leitfähigkeitswerte nicht verfügbar lfs=F einstellen
   #auführen der R-skripte für die benötigten Funktionen
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/Versuchsdesign/read_vaisala.R")
@@ -30,19 +31,7 @@ read_all<-function(datum,#datum des Versuchs
   if(qs==T){
     print("reading q data")
   #einlesen der abflussdaten
-  q<-read_waage(datum,start,mov_avg=5)
-  #runden der Datumsspalte auf Minutenwerte
-  q$date<-round_date(q$date,unit = "min")
-  #der erste q-Wert nach Zeitlücken über 2h wird entfernt 
-  q$q<-ifelse(c(0,as.numeric(diff(q$date)))>2*60,NA,q$q)
-  #erstellen einer durchgeheden Zeitsequenz mit Minutenwerten 
-  qmin<-data.frame(date=seq(min(q$date),max(q$date),60))
-  #zusammenführen der Abflusswerte und der Minutensequenz
-  q<-merge(qmin,q,all.x=T)
-  #anfangs und endwerte des Abflusses auf null setzen
-  q$q[c(1,nrow(q))]<-0
-  #interpolation der Fehlwerte um minütliche Abflusswerte zu erhalten
-  q$q<-na.approx(q$q)
+  q<-read_waage(datum,start,q_filter=q_filter)
   #abfluss wurde nur von tiefe -14 bestimmt
   q$tiefe<--17
   #zusammenführen der datensätze
