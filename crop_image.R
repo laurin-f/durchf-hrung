@@ -9,7 +9,7 @@ library(imager)
 jpgpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/waage/"
   #einlesen der dateiname aller .JPGs
 files<-list.files(paste0(jpgpfad,datum),pattern = ".JPG")
-id<-substr(files,5,9)#id aus dateiname extrahieren
+id<-substr(files,nchar(files)-7,nchar(files)-3)#id aus dateiname extrahieren
 
 #schleife für das Zuschneiden der Bilder
 for (i in 1:length(files)){
@@ -27,4 +27,6 @@ for (i in 1:length(files)){
 }#ende funktion
 
 #anwenden der Funktion
-crop.waage("2x.10")
+crop.waage("22.10")
+
+

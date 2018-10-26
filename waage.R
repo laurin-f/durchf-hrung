@@ -56,7 +56,8 @@ flasche<-min(gewicht)
 wasser<-gewicht-flasche
 #berechnung des Abflusses als änderungsrate des gewichts pro zeitschritt
 #Einheit = ml/min
-q<-c(0,ifelse(diff(wasser)>0,diff(wasser)/as.numeric(diff(date)),0))
+dt<-as.numeric(difftime(date[2:length(date)],date[1:(length(date)-1)],units="min"))
+q<-c(0,ifelse(diff(wasser)>0,diff(wasser)/dt,0))
 #der erste q-Wert nach Zeitlücken über 2h wird entfernt 
 q<-ifelse(c(0,as.numeric(diff(date)))>3*60,NA,q)
 

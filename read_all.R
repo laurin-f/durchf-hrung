@@ -10,6 +10,7 @@ read_all<-function(datum,#datum des Versuchs
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/Versuchsdesign/read_vaisala.R")
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_teta.R")
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/waage.R")
+  source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")
   
   #definieren der dateipfade
   bfpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/feuchte/"
@@ -73,5 +74,24 @@ read_all<-function(datum,#datum des Versuchs
     #berechnung der Menge an Calcium in mg die pro Zeitschritt transportiert wird 
     merged$ca_mg<-merged$ca_conc*merged$q/1000#mg/l*ml/min<-mg
   }
+  
+  #Zeitsequenz von anfang bis ende des Datensatzes
+  zeit<-unique(merged$date)
+  #Vektor für Niederschlagsintensität anlegen 
+  rain_mm_h<-rep(0,length(zeit))
+  #events laden
+  events<-event()
+  #event des gewünschten datums extrahieren
+  event<-events[events$datum==datum,]
+  #vom start bis zum ende des Events die Niederschlagsintensität in den rain-Vektor schreiben
+  rain_mm_h[zeit>=event$start&zeit<=event$stop]<-event$rain_mm_h
+  #Datensatz des Events tiefe ist Null
+  rain<-data.frame(rain_mm_h,date=zeit,tiefe=0)
+  #datensätze zusammenführen
+  merged<-merge(merged,rain,all=T)
+  
+  #t_min als abstand des Messzeitpunktes vom Start des Events in Minuten
+  merged$t_min<-as.numeric(difftime(merged$date,event$start,"min"))
+  merged$treatment<-round(event$rain_mm_h)
 return(merged)
 }#ende Funktion

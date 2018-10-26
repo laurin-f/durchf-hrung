@@ -23,11 +23,11 @@ plot_all<-function(data,#datensatz
   #wenn point=T wird geom_point verwendet ...
   if(point==T){
       co2_plot<-co2_plot+
-        geom_point(data=subset(data,tiefe!=-17),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),shape=20,size=0.5,na.rm = T)+ 
+        geom_point(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),shape=20,size=0.5,na.rm = T)+ 
         guides(colour = guide_legend(override.aes = list(size=3)))
     }else{#ansonsten geom_line
       co2_plot<-co2_plot+
-        geom_line(data=subset(data,tiefe!=-17),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)
+        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)
     }
   #extrahiern der Legende
   leg<-get_legend(co2_plot)
@@ -45,10 +45,10 @@ plot_all<-function(data,#datensatz
   #wenn point=T wird geom_point verwendet ...
   if(point==T){
     bf_plot<-bf_plot+
-      geom_point(data=subset(data,tiefe!=-17),aes(date,theta,col=as.factor(tiefe)),show.legend = F,shape=20,size=0.5,na.rm = T)
+      geom_point(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,shape=20,size=0.5,na.rm = T)
     }else{#ansonsten geom_line
       bf_plot<-bf_plot+
-        geom_line(data=subset(data,tiefe!=-17),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)
+        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)
     }
   
   #vertikalarrangement der zwei plots mit übereinstimmender x-achse
