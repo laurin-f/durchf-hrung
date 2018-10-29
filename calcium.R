@@ -30,7 +30,7 @@ ic$tiefe<-ifelse(ic$tiefenstufe==5,-17,-(ic$tiefenstufe*4-2))
 
 ints<-event()
 
-ic<-merge(ic,ints[,5:6])
+ic<-merge(ic,ints[,6:7])
 
 library(ggplot2)
 ggplot()+

@@ -2,7 +2,7 @@
 #Funktion um alle gemessenen Zeitreihen übereinander zu plotten
 
 plot_all<-function(data,#datensatz
-                   event=subset(events,start>=min(data$date)&stop<=max(data$date)),#zeitspanne in der beregnet wurde
+                   
                    name=NULL,#wenn ein name angegeben wird dann wird eine .pdf datei mit diesem namen gespeichert
                    height=9,#höhe der .pdf
                    width=7,#breite der .pdf
@@ -12,7 +12,13 @@ plot_all<-function(data,#datensatz
   #packages um plots zu arrangieren
   library(gridExtra)
   library(cowplot)
- 
+  
+  source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")
+  events<-event()
+  
+  #zeitspanne in der beregnet wurde
+  event<-subset(events,start>=min(data$date)&stop<=max(data$date))
+  
   #plot der CO2 daten 
   co2_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+

@@ -91,7 +91,7 @@ read_all<-function(datum,#datum des Versuchs
   merged<-merge(merged,rain,all=T)
   
   #t_min als abstand des Messzeitpunktes vom Start des Events in Minuten
-  merged$t_min<-as.numeric(difftime(merged$date,event$start,"min"))
+  merged$t_min<-as.numeric(difftime(merged$date,event$start,units = "mins"))
   merged$treatment<-round(event$rain_mm_h)
 return(merged)
 }#ende Funktion

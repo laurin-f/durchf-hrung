@@ -42,9 +42,12 @@ okt15<-subset(okt15,date>="2018-10-15 09:06:31 CEST")
 
 okt18<-read_all(datum="18.10",start = "09:30")
 
-okt22<-read_all(datum="22.10",start = "13:36")
+okt22<-read_all(datum="22.10",start = "14:06")
+okt26<-read_all(datum="26.10",start = "10:03")
 
-all<-rbind(okt15,okt18,okt22)
+all<-rbind(okt15,okt18,okt22,okt26)
+save(all,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+
 okt151822<-rbind(okt15[,1:6],okt18[,1:6],okt22[,1:6])
 
 events<-event()
@@ -54,7 +57,8 @@ events$start
 library(ggplot2)
 ggplot(subset(all,tiefe%in%c(-10,-14)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)
 
-plot(all$t_min,all$CO2_raw)
+ggplot(subset(all,tiefe%in%c(-2,-6)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)
+
 
 plot_all(okt10)
 plot_all(okt15)#,name="15.10_int50mm8h",height = 9)
@@ -62,8 +66,9 @@ plot_all(okt18)#,name="18.10_int50mm3h",height = 9)
 plot_all(okt18[1:5])
 plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
 plot_all(okt22[,1:6])
+plot_all(okt26)
 
-plot_all(all,point = F)
+plot_all(all[,1:6])
 plot_all(okt151822,point = F)#,name = "int50mm3h&50mm8h")
 
 max(okt18$wasser,na.rm=T)
@@ -71,7 +76,7 @@ ts<-seq(events$start[events$datum=="18.10"]+60*60,max(okt18$date),by=60*60*4)
 sub18<-okt18[which(okt18$date%in%ts),]
 ggplot(sub18,tiefe,aes(CO2_raw,tiefe,col=as.factor(date)))+geom_path()
 
-minokt10<-c(format(okt10$date,"%Y%m%d%H%M")[30:nrow(okt10)],rep("201910101010",29))
+
 
 ggplot(okt10,aes(theta,CO2_raw,col=as.factor(tiefe)))+geom_point()
 ggplot(okt15,aes(theta,CO2_raw,col=as.factor(tiefe)))+geom_point()
@@ -84,13 +89,6 @@ ggplot(okt15,aes(temp,CO2_raw,col=as.factor(tiefe)))+geom_point()
 
 ggplot(okt15,aes(date,temp,col=as.factor(tiefe)))+geom_point()
 
-capath<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/ca/"
-load(file=paste0(capath,"cafm.R"))
-okt18$ca_conc<-predict(cafm,data.frame(lf=okt18$lf))
-okt18$ca_conc[okt18$ca_conc<0]<-0
-okt18$ca_mg<-okt18$ca_conc*okt18$q/1000#mg/l*ml/min<-mg
-
-sum(okt18$ca_mg,na.rm = T)/max(okt18$wasser,na.rm = T)*1000
 
 
 
