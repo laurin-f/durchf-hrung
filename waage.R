@@ -24,8 +24,10 @@ file<-list.files(paste0(pfad,datum),pattern = ".JPG")
 id<-as.numeric(substr(file,5,8))#id aus dateiname extrahieren
 
 #wenn exifs schon ausgelesen wurden wird hier auf die gespeicherte Datei zugegriffen
-if(file.exists(paste0(pfad,"exifs_",datum,".txt"))){
-  date<-ymd_hms(read.csv(paste0(pfad,"exifs_",datum,".txt"),stringsAsFactors = F)[,1],tz="CET")
+#if(file.exists(paste0(pfad,"exifs_",datum,".txt"))){
+if(file.exists(paste0(pfad,"exifs_",datum,".R"))){
+#  date<-ymd_hms(read.csv(paste0(pfad,"exifs_",datum,".txt"),stringsAsFactors = F)[,1],tz="CET")
+  load(paste0(pfad,"exifs_",datum,".R"))
 }else{
   
 #falls in der .csv tabelle mit den Gewicht-werten nicht alle Fotos enthalten sind wird hier abgebrochen
@@ -37,9 +39,11 @@ print("start reading exifs")
 exifs<-exif_read(paste0(pfad,datum,"/",file))
 print("finished reading exifs")
 #das Erstellungsdatum wird aus den Exifs ausgelesen
-date<-ymd_hms(exifs$CreateDate,tz="CET")
+#date<-ymd_hms(exifs$CreateDate,tz="CET")
+date<-with_tz(ymd_hms(exifs$CreateDate,tz="UTC")-2*60*60)
 #um Zeit zu sparen wird das Datum in einer .csv gespeichert und beim nächsten mal direkt auf diese zugegriffen
-write.csv(as.data.frame(date),paste0(pfad,"exifs_",datum,".txt"),row.names = F)
+save(date,file=paste0(pfad,"exifs_",datum,".R"))
+#write.csv(as.data.frame(date),paste0(pfad,"exifs_",datum,".txt"),row.names = F)
 }
 }
 
@@ -75,9 +79,10 @@ qmin<-data.frame(date=seq(min(q$date),max(q$date),60))
 q<-merge(qmin,q,all.x=T)
 
 #interpolation der Fehlwerte um minütliche Abflusswerte zu erhalten
-q$q<-na.approx(q$q)
-}
+q$q_interpol<-na.approx(q$q)
+
 #gleitendes Mittel des Abflusses um die Kurve zu glätten
-q$q<-zoo::rollapply(q$q, q_filter, mean, na.rm = T, fill=NA)
+q$q_interpol<-zoo::rollapply(q$q_interpol, q_filter, mean, na.rm = T, fill=NA)
+}
 #ausgeben des Datensatzes
 return(q)}

@@ -13,24 +13,6 @@ source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/plot_all.R")
 q_15.10<-read_waage("15.10",start = "09:21",mov_avg = 5)
 #q_15.10$date[which(q_15.10$id==125):length(q_15.10$date)] <-q_15.10$date[which(q_15.10$id==125):length(q_15.10$date)]+10*60
 
-teset<-read_vaisala("tiefe2_22.10","C:/Users/ThinkPad/Documents/Masterarbeit/daten/co2/",aggregate = F,temp_line = 31,Sonde=2)[1:60000,]
-plot(teset$date,teset$CO2_raw,type="l")
-abline(v=events$start)
-abline(v=events$stop)
-teset2<-read_vaisala("tiefe1_22.10","C:/Users/ThinkPad/Documents/Masterarbeit/daten/co2/",aggregate = F,temp_line = 31,Sonde=1)[1:60000,]
-plot(teset2$date,teset2$CO2_raw,type="l")
-abline(v=events$start)
-abline(v=events$stop)
-
-teset3<-read_vaisala("tiefe3_22.10","C:/Users/ThinkPad/Documents/Masterarbeit/daten/co2/",aggregate = F,temp_line = 31,Sonde=3)[1:60000,]
-plot(teset3$date,teset3$CO2_raw,type="l")
-abline(v=events$start)
-abline(v=events$stop)
-
-teset4<-read_vaisala("tiefe4_22.10","C:/Users/ThinkPad/Documents/Masterarbeit/daten/co2/",aggregate = F,temp_line = 31,Sonde=4)[1:60000,]
-plot(teset4$date,teset4$CO2_raw,type="l")
-abline(v=events$start)
-abline(v=events$stop)
 
 okt10<-read_all(datum="10.10",qs=F)
 
@@ -43,7 +25,29 @@ okt15<-subset(okt15,date>="2018-10-15 09:06:31 CEST")
 okt18<-read_all(datum="18.10",start = "09:30")
 
 okt22<-read_all(datum="22.10",start = "14:06")
+
+bf26<-read_teta(pfad = bfpfad,name=paste0("bf_","26.10"))
+datchr<-format(bf26$date,usetz = T)
+datchr<-gsub("CET","CEST",datchr)
+bf26$date<-with_tz(ymd_hms(datchr,tz="UTC")-2*60*60)
+
 okt26<-read_all(datum="26.10",start = "10:03")
+okt26<-okt26[,-(6:7)]
+okt26$datechr<-format(okt26$date,usetz = T)
+bf26$datechr<-format(bf26$date,usetz = T)
+okt26<-merge(okt26,bf26,by=c("datechr","date","tiefe"),all=T)
+
+okt26<-okt26[,c(1:5,16:17,6:15)+1]
+
+tiefe17<-subset(okt26,tiefe==-17)
+zeitumst<-format(tiefe17$date,usetz = T)
+zwei_winterzeit<-min(grep("2018-10-28 02:00:00 CET",zeitumst))
+zwei_sommerzeit<-min(grep("2018-10-28 02:00:00 CEST",zeitumst))
+
+ende_sommerzeit<-length(tiefe17$lf)-(zwei_winterzeit-zwei_sommerzeit)
+tiefe17[zwei_sommerzeit:ende_sommerzeit,]<-tiefe17[zwei_winterzeit:length(tiefe17$lf),]
+
+okt26$lf[okt26$tiefe==-17]<-tiefe17$lf
 
 all<-rbind(okt15,okt18,okt22,okt26)
 save(all,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
@@ -52,6 +56,12 @@ okt151822<-rbind(okt15[,1:6],okt18[,1:6],okt22[,1:6])
 
 events<-event()
 events$start
+
+
+
+
+
+
 ###############################################################
 #plots
 library(ggplot2)
@@ -66,9 +76,9 @@ plot_all(okt18)#,name="18.10_int50mm3h",height = 9)
 plot_all(okt18[1:5])
 plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
 plot_all(okt22[,1:6])
-plot_all(okt26)
+plot_all(okt26)#,name="26.10_int50mm8h",height = 9)
 
-plot_all(all[,1:6])
+plot_all(all[,1:6],name="alle",height = 6)
 plot_all(okt151822,point = F)#,name = "int50mm3h&50mm8h")
 
 max(okt18$wasser,na.rm=T)

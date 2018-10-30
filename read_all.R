@@ -20,6 +20,8 @@ read_all<-function(datum,#datum des Versuchs
   print("reading CO2 data")
   #einlesen der co2 daten
   co2<-read_vaisala(pfad=co2pfad,datum=datum)
+  
+  library(lubridate)
   #runden der Datumsspalte auf Minutenwerte
   co2$date<-round_date(co2$date,"minute")
   

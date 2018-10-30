@@ -76,7 +76,7 @@ plot_all<-function(data,#datensatz
   #plot der Abflussdaten falls vorhanden
   if(length(data$q)!=0){ 
       q_plot<-ggplot()+
-        geom_line(data=subset(data,tiefe==-17),aes(date,q),show.legend = F,na.rm = T)+
+        geom_line(data=subset(data,tiefe==-17),aes(date,q_interpol),show.legend = F,na.rm = T)+
         geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
     labs(y=expression("q  [ml * min"^{-1}*"]"),x="")+
         theme_classic()+scale_x_datetime(limits = range(data$date))

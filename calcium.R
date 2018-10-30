@@ -37,3 +37,9 @@ ggplot()+
   geom_path(data=ic,aes(ca,tiefe,col=as.factor(round(rain_mm_h))))+
   labs(x=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),y="tiefe [cm]",col=expression("Intensität [mm*h"^{-1}*"]"))+theme_classic()
 
+lf<-merge(lf,ints[,6:7])
+plot(lf$lf,lf$tiefe)
+
+ggplot(lf)+geom_point(aes(lf,tiefe,col=as.factor(round(rain_mm_h))))
+
+ggplot(lf)+geom_point(aes(rain_mm_h,lf,col=as.factor((tiefe))))
