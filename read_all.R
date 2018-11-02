@@ -85,6 +85,7 @@ read_all<-function(datum,#datum des Versuchs
   events<-event()
   #event des gewünschten datums extrahieren
   event<-events[events$datum==datum,]
+  if(nrow(event)!=0){
   #vom start bis zum ende des Events die Niederschlagsintensität in den rain-Vektor schreiben
   rain_mm_h[zeit>=event$start&zeit<=event$stop]<-event$rain_mm_h
   #Datensatz des Events tiefe ist Null
@@ -94,6 +95,6 @@ read_all<-function(datum,#datum des Versuchs
   
   #t_min als abstand des Messzeitpunktes vom Start des Events in Minuten
   merged$t_min<-as.numeric(difftime(merged$date,event$start,units = "mins"))
-  merged$treatment<-round(event$rain_mm_h)
+  merged$treatment<-round(event$rain_mm_h)}
 return(merged)
 }#ende Funktion

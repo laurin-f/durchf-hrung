@@ -73,6 +73,7 @@ okt26$lf[okt26$tiefe==-17]<-tiefe17$lf
 okt26<-okt26[1:max(which(!is.na(okt26$theta))),]
 
 
+okt31<-read_all(datum="31.10",start="12:42",qs=F,lfs=F)
 ##########################################################
 #Alle in einen Datensatz
 all<-rbind(okt15,okt18,okt22,okt26)
@@ -82,10 +83,18 @@ okt151822<-rbind(okt15[,1:6],okt18[,1:6],okt22[,1:6])
 
 events<-event()
 events$start
+1.15*50
+# 
+thetamax<-max(all$theta[all$tiefe==-14],na.rm=T)
+all$theta_korr<-all$theta
+for (i in c(-6,-10,-14)){
+all$theta_korr[all$tiefe==i]<-(thetamax-max(all$theta[all$tiefe==i],na.rm = T))+all$theta[all$tiefe==i]}
 
 
+plot(all$theta_korr)
+ggplot(all)+geom_line(aes(date,theta_korr,col=as.factor(tiefe)))
 
-
+ggplot(all)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 
 ###############################################################
 #plots
@@ -102,6 +111,10 @@ sub_saugkerz<-subset(all,date>"2018-10-31 07:00:00 CEST"&tiefe!=0)
 
 ggplot(sub_saugkerz)+geom_line(aes(date,CO2,col=as.factor(tiefe)))+geom_vline(xintercept = as.numeric(ymd_hms(c("2018-10-31 09:26:00","2018-10-31 12:30:00"),tz="CET")))+facet_wrap(~tiefe,scales = "free",ncol=1)
 
+plot(1,1)
+dev.off()
+ggplot(okt31)+geom_line(aes(date,CO2_raw,col=as.factor(tiefe)))
+ggplot(okt31)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 #############################################################
 #Übersichtsplots
 plot_all(okt10)
@@ -111,6 +124,7 @@ plot_all(okt18[1:5])
 plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
 plot_all(okt22[,1:6])
 plot_all(okt26)#,name="26.10_int50mm8h",height = 9)
+plot_all(okt31)
 
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)
