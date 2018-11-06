@@ -40,6 +40,6 @@ ggplot()+
 lf<-merge(lf,ints[,6:7])
 plot(lf$lf,lf$tiefe)
 
-ggplot(lf)+geom_point(aes(lf,tiefe,col=as.factor(round(rain_mm_h))))
+ggplot(lf)+geom_point(aes(lf,-tiefe,col=as.factor(round(rain_mm_h))))
 
-ggplot(lf)+geom_point(aes(rain_mm_h,lf,col=as.factor((tiefe))))
+ggplot(lf)+geom_point(aes(rain_mm_h,lf,shape=as.factor((tiefe))))

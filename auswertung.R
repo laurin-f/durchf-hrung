@@ -10,6 +10,8 @@ source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")
 source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_all.R")
 source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/plot_all.R")
 
+
+plotpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/abbildungen/plots/"
 q_15.10<-read_waage("15.10",start = "09:21",mov_avg = 5)
 #q_15.10$date[which(q_15.10$id==125):length(q_15.10$date)] <-q_15.10$date[which(q_15.10$id==125):length(q_15.10$date)]+10*60
 
@@ -56,15 +58,16 @@ ggplot(all)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 
 #Reaktion der Unteschiedlichen Tiefen in Miunten anch Event
 library(ggplot2)
-ggplot(subset(all,tiefe%in%c(-10,-14)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)
+ggplot(subset(all,tiefe%in%c(-10,-14)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)+theme_classic()+labs(col=expression("Intensität [mm h"^{-1}*"]"))+ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 7)
 
 ggplot(subset(all,tiefe%in%c(-2,-6)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)
 
 #########################################################
 #Einfluss des ein und auschaltens der Pumpe für die Saugkerzen
-sub_saugkerz<-subset(all,date>"2018-10-31 07:00:00 CEST"&tiefe!=0)
+tiefenstufen<--seq(2,14,by=4)
+sub_saugkerz<-subset(all,date>"2018-10-31 08:00:00 CEST"&date<"2018-10-31 15:00:00 CEST"&tiefe%in%tiefenstufen)
 
-ggplot(sub_saugkerz)+geom_line(aes(date,CO2,col=as.factor(tiefe)))+geom_vline(xintercept = as.numeric(ymd_hms(c("2018-10-31 09:26:00","2018-10-31 12:30:00"),tz="CET")))+facet_wrap(~tiefe,scales = "free",ncol=1)
+ggplot(sub_saugkerz)+geom_line(aes(date,CO2,col=as.factor(tiefe)))+geom_vline(xintercept = as.numeric(ymd_hms(c("2018-10-31 09:26:00","2018-10-31 12:30:00"),tz="CET")))+facet_wrap(~tiefe,scales = "free",ncol=1)+theme_classic()+labs(col="tiefe")+ggsave(paste0(plotpfad,"Saugkerzen_leeren.pdf"),width = 7,height = 7)
 
 plot(1,1)
 dev.off()
@@ -108,8 +111,4 @@ ggplot(okt15,aes(date,temp,col=as.factor(tiefe)))+geom_point()
 
 
 ggplot(all,aes(date,temp,col=as.factor(tiefe)))+geom_point()
-
-
-
-
 
