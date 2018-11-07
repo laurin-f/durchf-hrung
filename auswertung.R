@@ -12,7 +12,7 @@ source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/plot_all.R")
 
 
 plotpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/abbildungen/plots/"
-q_15.10<-read_waage("15.10",start = "09:21",mov_avg = 5)
+#q_15.10<-read_waage("15.10",start = "09:21",mov_avg = 5)
 #q_15.10$date[which(q_15.10$id==125):length(q_15.10$date)] <-q_15.10$date[which(q_15.10$id==125):length(q_15.10$date)]+10*60
 
 
@@ -111,4 +111,5 @@ ggplot(okt15,aes(date,temp,col=as.factor(tiefe)))+geom_point()
 
 
 ggplot(all,aes(date,temp,col=as.factor(tiefe)))+geom_point()
+
 

@@ -3,21 +3,23 @@
 
 co2pfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/co2/"
 
+source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_teta.R")
+source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_all.R")
 #CO2_zeitumst<-read_vaisala(datum = "26.10",pfad=co2pfad,aggregate = F)
-CO2_zeitumst$datechr<-format(CO2_zeitumst$date,usetz = T)
-t1<-which(CO2_zeitumst$datechr=="2018-10-28 02:00:00 CET"&CO2_zeitumst$tiefe==-2)
-CO2_zeitumst$date[t1[1]:(t1[2]-1)]<-CO2_zeitumst$date[t1[1]:(t1[2]-1)]-60*60
-t2<-which(CO2_zeitumst$datechr=="2018-10-28 02:00:00 CET"&CO2_zeitumst$tiefe==-14)
-CO2_zeitumst$date[t2[1]:(t2[2]-1)]<-CO2_zeitumst$date[t2[1]:(t2[2]-1)]-60*60
-t3<-which(CO2_zeitumst$datechr=="2018-10-28 02:01:00 CET"&CO2_zeitumst$tiefe==-10)
-CO2_zeitumst$date[t3[1]:(t3[2]-2)]<-CO2_zeitumst$date[t3[1]:(t3[2]-2)]-60*60
-CO2_zeitumst<-CO2_zeitumst[-6]
-#vektor mit Minutenwerten erstellen
-min<-round_date(CO2_zeitumst$date,"min")
-minchr<-format(min,usetz = T)
-CO2_zeitumstmin<-aggregate(CO2_zeitumst,list(minchr,CO2_zeitumst$tiefe),mean)
-out<-CO2_zeitumstmin[,-(1:2)]
-save(out,file = paste0(co2pfad,"co2_26.10.R"))
+# CO2_zeitumst$datechr<-format(CO2_zeitumst$date,usetz = T)
+# t1<-which(CO2_zeitumst$datechr=="2018-10-28 02:00:00 CET"&CO2_zeitumst$tiefe==-2)
+# CO2_zeitumst$date[t1[1]:(t1[2]-1)]<-CO2_zeitumst$date[t1[1]:(t1[2]-1)]-60*60
+# t2<-which(CO2_zeitumst$datechr=="2018-10-28 02:00:00 CET"&CO2_zeitumst$tiefe==-14)
+# CO2_zeitumst$date[t2[1]:(t2[2]-1)]<-CO2_zeitumst$date[t2[1]:(t2[2]-1)]-60*60
+# t3<-which(CO2_zeitumst$datechr=="2018-10-28 02:01:00 CET"&CO2_zeitumst$tiefe==-10)
+# CO2_zeitumst$date[t3[1]:(t3[2]-2)]<-CO2_zeitumst$date[t3[1]:(t3[2]-2)]-60*60
+# CO2_zeitumst<-CO2_zeitumst[-6]
+# #vektor mit Minutenwerten erstellen
+# min<-round_date(CO2_zeitumst$date,"min")
+# minchr<-format(min,usetz = T)
+# CO2_zeitumstmin<-aggregate(CO2_zeitumst,list(minchr,CO2_zeitumst$tiefe),mean)
+# out<-CO2_zeitumstmin[,-(1:2)]
+# save(out,file = paste0(co2pfad,"co2_26.10.R"))
 
 bfpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/feuchte/"
 bf26<-read_teta(pfad = bfpfad,name=paste0("bf_","26.10"))

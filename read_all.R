@@ -74,7 +74,7 @@ read_all<-function(datum,#datum des Versuchs
     #es gibt keine Konzentrationen unter Null
     merged$ca_conc[merged$ca_conc<0]<-0
     #berechnung der Menge an Calcium in mg die pro Zeitschritt transportiert wird 
-    merged$ca_mg<-merged$ca_conc*merged$q/1000#mg/l*ml/min<-mg
+    merged$ca_mg<-merged$ca_conc*merged$q_interpol/1000#mg/l*ml/min<-mg
   }
   
   #Zeitsequenz von anfang bis ende des Datensatzes
