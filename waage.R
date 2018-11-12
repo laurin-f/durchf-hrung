@@ -79,7 +79,7 @@ qmin<-data.frame(date=seq(min(q$date),max(q$date),60))
 q<-merge(qmin,q,all.x=T)
 
 #interpolation der Fehlwerte um minütliche Abflusswerte zu erhalten
-q$q_interpol<-na.approx(q$q)
+q$q_interpol<-zoo::na.approx(q$q)
 
 #gleitendes Mittel des Abflusses um die Kurve zu glätten
 q$q_interpol<-zoo::rollapply(q$q_interpol, q_filter, mean, na.rm = T, fill=NA)

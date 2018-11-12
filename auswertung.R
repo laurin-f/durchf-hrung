@@ -32,6 +32,24 @@ okt22<-read_all(datum="22.10",start = "14:06")
 load("C:/Users/ThinkPad/Documents/Masterarbeit/daten/okt26.R")
 
 okt31<-read_all(datum="31.10",start="12:42")
+
+
+waage_07.11<-read_waage(datum="07.11",start="12:36")
+max(waage_07.11$wasser,na.rm = T)
+plot(waage_07.11$date,waage_07.11$q_interpol)
+
+plot(waage_07.11$date,waage_07.11$wasser)
+waage_07.11[which.max(waage_07.11$q_interpol),]
+date
+lfpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/leitf/"
+library(readxl)
+#einlesen der Leitfähigkeitsdaten
+lf<-read_xlsx(paste0(lfpfad,datum,".xlsx"))[,4:5]
+#Spaltennamen ändern
+colnames(lf)<-c("date","lf")
+#datumsspalte formatieren
+lf$date<-ymd_hms(lf$date,tz="CET")
+plot(lf$date,lf$lf,type="l")
 ##########################################################
 #Alle in einen Datensatz
 all<-rbind(okt15,okt18,okt22,okt26,okt31)
