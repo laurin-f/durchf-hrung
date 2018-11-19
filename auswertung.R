@@ -34,25 +34,15 @@ load("C:/Users/ThinkPad/Documents/Masterarbeit/daten/okt26.R")
 okt31<-read_all(datum="31.10",start="12:42")
 
 
-waage_07.11<-read_waage(datum="07.11",start="12:36")
-max(waage_07.11$wasser,na.rm = T)
-plot(waage_07.11$date,waage_07.11$q_interpol)
+nov07<-read_all(datum="07.11",start="12:36")
 
-plot(waage_07.11$date,waage_07.11$wasser)
-waage_07.11[which.max(waage_07.11$q_interpol),]
-date
-lfpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/leitf/"
-library(readxl)
-#einlesen der Leitfähigkeitsdaten
-lf<-read_xlsx(paste0(lfpfad,datum,".xlsx"))[,4:5]
-#Spaltennamen ändern
-colnames(lf)<-c("date","lf")
-#datumsspalte formatieren
-lf$date<-ymd_hms(lf$date,tz="CET")
-plot(lf$date,lf$lf,type="l")
+
+nov14<-read_all(datum="14.11",start="10:06")
+
+
 ##########################################################
 #Alle in einen Datensatz
-all<-rbind(okt15,okt18,okt22,okt26,okt31)
+all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 save(all,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
 
 events<-event()
@@ -101,6 +91,8 @@ plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
 plot_all(okt22[,1:6])
 plot_all(okt26)#,name="26.10_int50mm8h",height = 9)
 plot_all(okt31)#,name="31.10_int50mm50h",height = 9)
+plot_all(nov07)#,name="07.11_int50mm50h",height = 9)
+plot_all(nov14)#,name="14.11_int50mm50h",height = 9)
 
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)
