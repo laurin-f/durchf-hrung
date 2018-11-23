@@ -17,6 +17,10 @@ for (i in 1:length(files)){
   image<-load.image(paste0(jpgpfad,datum,"/",files[i]))
   #zuschneiden des i-ten Bildes
   croped<-imsub(image,1486+713>x&x>1486,1330+345>y&y>1330)
+
+  #falls nicht vorhanden unterordner /cropped erstellen
+  if(!dir.exists(paste0(jpgpfad,datum,"/cropped/"))){
+  dir.create(paste0(jpgpfad,datum,"/cropped/"))}
   #abspeichern des zugeschnittenen bildes im unterordner "/cropped"
   save.image(croped,paste0(jpgpfad,datum,"/cropped/",id[i],"jpg"))
   
@@ -27,6 +31,6 @@ for (i in 1:length(files)){
 }#ende funktion
 
 #anwenden der Funktion
-crop.waage("1x.11")
+crop.waage("21.11")
 
 
