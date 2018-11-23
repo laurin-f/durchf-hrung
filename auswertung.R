@@ -39,11 +39,14 @@ nov07<-read_all(datum="07.11",start="12:36")
 
 nov14<-read_all(datum="14.11",start="10:06")
 
+nov21<-read_all(datum="21.11",start="10:58",qs=F,lfs=F)
+
+
 
 ##########################################################
 #Alle in einen Datensatz
 all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
-save(all,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+#save(all,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
 
 events<-event()
 
@@ -93,6 +96,8 @@ plot_all(okt26)#,name="26.10_int50mm8h",height = 9)
 plot_all(okt31)#,name="31.10_int50mm50h",height = 9)
 plot_all(nov07)#,name="07.11_int50mm50h",height = 9)
 plot_all(nov14)#,name="14.11_int50mm50h",height = 9)
+
+plot_all(nov21)#,name="21.11_int50mm3h",height = 9)
 
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)
