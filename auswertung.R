@@ -39,14 +39,18 @@ nov07<-read_all(datum="07.11",start="12:36")
 
 nov14<-read_all(datum="14.11",start="10:06")
 
-nov21<-read_all(datum="21.11",start="10:58",qs=F,lfs=F)
+nov21<-read_all(datum="21.11",start="10:58")
+
+nov29<-read_all(datum="29.11",start="12:31")
 
 
 
 ##########################################################
 #Alle in einen Datensatz
 all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
-#save(all,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+alldist<-rbind(nov29)
+save(all,alldist,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+
 
 events<-event()
 
@@ -68,6 +72,7 @@ ggplot(all)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 #plots
 
 #Reaktion der Unteschiedlichen Tiefen in Miunten anch Event
+##########################################################
 library(ggplot2)
 ggplot(subset(all,tiefe%in%c(-10,-14)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)+theme_classic()+labs(col=expression("Intensität [mm h"^{-1}*"]"))+ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 7)
 
@@ -75,6 +80,7 @@ ggplot(subset(all,tiefe%in%c(-2,-6)),aes(t_min,CO2,col=as.factor(treatment)))+ge
 
 #########################################################
 #Einfluss des ein und auschaltens der Pumpe für die Saugkerzen
+####################################################
 tiefenstufen<--seq(2,14,by=4)
 sub_saugkerz<-subset(all,date>"2018-10-31 08:00:00 CEST"&date<"2018-10-31 15:00:00 CEST"&tiefe%in%tiefenstufen)
 
@@ -86,6 +92,7 @@ ggplot(okt31)+geom_line(aes(date,CO2_raw,col=as.factor(tiefe)))
 ggplot(okt31)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 #############################################################
 #Übersichtsplots
+##########################################################
 plot_all(okt10)
 plot_all(okt15)#,name="15.10_int50mm8h",height = 9)
 plot_all(okt18)#,name="18.10_int50mm3h",height = 9)
