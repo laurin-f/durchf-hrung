@@ -49,7 +49,6 @@ ggplot()+
   labs(x=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),y="tiefe [cm]",col=legendtitle,shape=legendtitle)+theme_classic()
 
 lf<-merge(lf,ints[,6:7])
-plot(lf$lf,lf$tiefe)
 
 ggplot(lf)+geom_point(aes(lf,-tiefe,shape=as.factor(round(rain_mm_h)),col=as.factor(round(rain_mm_h))))+labs(col="int",shape="int")
 

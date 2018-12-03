@@ -105,6 +105,7 @@ plot_all(nov07)#,name="07.11_int50mm50h",height = 9)
 plot_all(nov14)#,name="14.11_int50mm50h",height = 9)
 
 plot_all(nov21)#,name="21.11_int50mm3h",height = 9)
+plot_all(nov29)#,name="29.11_int50mm3h",height = 9)
 
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)

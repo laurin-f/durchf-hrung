@@ -2,7 +2,7 @@
 #Funktion um den Auschnitt der Waage-Fotos auszuschneiden auf dem das Gewicht zu erkennen ist
 #dadurch sind die werte auch in der miniaturansicht des explorers erkennbar 
 
-crop.waage<-function(datum){
+crop.waage<-function(datum,xpos=1326,ypos=1431,dx=679,dy=438){
   #package für bildbearbeitung
 library(imager)
   #dateipfad
@@ -16,7 +16,7 @@ for (i in 1:length(files)){
   #einlesen des i-ten Bildes 
   image<-load.image(paste0(jpgpfad,datum,"/",files[i]))
   #zuschneiden des i-ten Bildes
-  croped<-imsub(image,1486+713>x&x>1486,1330+345>y&y>1330)
+  croped<-imsub(image,xpos+dx>x&x>xpos,ypos+dy>y&y>ypos)
 
   #falls nicht vorhanden unterordner /cropped erstellen
   if(!dir.exists(paste0(jpgpfad,datum,"/cropped/"))){
@@ -31,6 +31,6 @@ for (i in 1:length(files)){
 }#ende funktion
 
 #anwenden der Funktion
-crop.waage("21.11")
+crop.waage("29.11")
 
 
