@@ -1,6 +1,6 @@
 ###############################################
 #Funktion um die Events zu speichern
-
+#hallo laurin
 event<-function(pfad="C:/Users/ThinkPad/Documents/Masterarbeit/daten/events/"){
   #packege für datumsformatierung
   library(lubridate)
