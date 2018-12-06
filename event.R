@@ -20,3 +20,4 @@ event<-function(pfad="C:/Users/ThinkPad/Documents/Masterarbeit/daten/events/"){
   event$datum<-format(event$start,"%d.%m")
   return(event)
 }
+testInheritedMethods()
