@@ -31,6 +31,6 @@ for (i in 1:length(files)){
 }#ende funktion
 
 #anwenden der Funktion
-crop.waage("29.11")
+crop.waage("05.12")
 
 

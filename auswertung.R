@@ -47,22 +47,22 @@ nov29<-read_all(datum="29.11",start="12:31")
 
 ##########################################################
 #Alle in einen Datensatz
+all_list<-list(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
-all_s<-rbind(okt15,okt18,okt26,okt31)
+all_s<-rbind(okt18,okt22,okt26,okt31)
 plot(all_s$date,all_s$CO2_raw)
 tiefenstufen<-c(0,-2,-6,-10,-14,-17)
 
-for(i in 1:6){
-sub<-all_s$date[all_s$tiefe==tiefenstufen[i]]
-gap<-which(diff(sub)>60*24*4)
-tdiff<-diff(sub)[gap]
-sub[(gap+1):length(sub)]<-sub[(gap+1):length(sub)]-tdiff+60
-all_s$date[all_s$tiefe==tiefenstufen[i]]<-sub
-}
-
+# for(i in 1:6){
+# sub<-all_s$date[all_s$tiefe==tiefenstufen[i]]
+# gap<-which(diff(sub)>60*24*4)
+# tdiff<-diff(sub)[gap]
+# sub[(gap+1):length(sub)]<-sub[(gap+1):length(sub)]-tdiff+60
+# all_s$date[all_s$tiefe==tiefenstufen[i]]<-sub
+# }
 
 alldist<-rbind(nov29)
-save(all,alldist,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+save(all,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
 
 
 events<-event()
