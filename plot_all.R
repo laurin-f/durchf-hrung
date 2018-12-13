@@ -6,7 +6,13 @@ plot_all<-function(data,#datensatz
                    name=NULL,#wenn ein name angegeben wird dann wird eine .pdf datei mit diesem namen gespeichert
                    height=9,#höhe der .pdf
                    width=7,#breite der .pdf
-                   point=F){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
+                   point=F,
+                   show.legend=T,
+                   ylabs=c(expression("CO"[2]*"  [ppm]"),
+                           expression(theta*"  [VOl %]"),
+                           expression("LF  ["*mu*"S * cm"^{-1}*"]"),
+                           expression("q  [ml * min"^{-1}*"]")),
+                   scale=T){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
   #package für schöne plots
   library(ggplot2)
   #packages um plots zu arrangieren
@@ -18,13 +24,12 @@ plot_all<-function(data,#datensatz
   
   #zeitspanne in der beregnet wurde
   event<-subset(events,start>=min(data$date)&stop<=max(data$date))
-  
+  day<-as.numeric(format(data$date,"%d"))
   #plot der CO2 daten 
   co2_plot<-ggplot()+
-    geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
-    labs(y=expression("CO"[2]*"  [ppm]"),x="",col="tiefe")+
-    theme_classic()+
-    scale_x_datetime(limits = range(data$date))
+    geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf,fill=""), alpha = 0.15)+
+    labs(y=ylabs[1],x="",col="tiefe")+
+    theme_classic()+scale_fill_manual(name="event",values="blue")+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
   
   #wenn point=T wird geom_point verwendet ...
   if(point==T){
@@ -33,8 +38,12 @@ plot_all<-function(data,#datensatz
         guides(colour = guide_legend(override.aes = list(size=3)))
     }else{#ansonsten geom_line
       co2_plot<-co2_plot+
-        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)
+        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)+scale_y_continuous(limits = range(all_plot$CO2_raw,na.rm = T))
     }
+  if(scale==F){
+    co2_plot<-co2_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
+  }
+    
   #extrahiern der Legende
   leg<-get_legend(co2_plot)
   #entfernen der Legende
@@ -45,8 +54,8 @@ plot_all<-function(data,#datensatz
   if(length(data$theta)!=0){   
   bf_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
-    labs(y=expression(theta*"  [VOl %]"),x="",col="tiefe")+
-    theme_classic()+scale_x_datetime(limits = range(data$date))
+    labs(y=ylabs[2],x="",col="tiefe")+
+    theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+theme(axis.text.x = element_blank())
   
   #wenn point=T wird geom_point verwendet ...
   if(point==T){
@@ -54,9 +63,11 @@ plot_all<-function(data,#datensatz
       geom_point(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,shape=20,size=0.5,na.rm = T)
     }else{#ansonsten geom_line
       bf_plot<-bf_plot+
-        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)
+        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)+scale_y_continuous(limits = range(all_plot$theta,na.rm = T))
     }
-  
+  if(scale==F){
+    bf_plot<-bf_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
+  }
   #vertikalarrangement der zwei plots mit übereinstimmender x-achse
   p<-plot_grid(co2_plot,bf_plot,align = "v",ncol=1,rel_heights = c(2,1))
   }
@@ -66,8 +77,8 @@ plot_all<-function(data,#datensatz
     lf_plot<-ggplot()+
       geom_line(data=subset(data,tiefe==-17),aes(date,lf),show.legend = F,na.rm = T)+
       geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
-    labs(y=expression("LF  ["*mu*"S * cm"^{-1}*"]"),x="")+
-      theme_classic()+scale_x_datetime(limits = range(data$date))
+    labs(y=ylabs[3],x="")+
+      theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+scale_y_continuous(limits = c(250,max(all_plot$lf,na.rm = T)))
     
     #vertikalarrangement der drei plots mit übereinstimmender x-achse
     p<-plot_grid(co2_plot,bf_plot,lf_plot,align = "v",ncol=1,rel_heights = c(2,1,1))
@@ -78,13 +89,19 @@ plot_all<-function(data,#datensatz
       q_plot<-ggplot()+
         geom_line(data=subset(data,tiefe==-17),aes(date,q_interpol),show.legend = F,na.rm = T)+
         geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
-    labs(y=expression("q  [ml * min"^{-1}*"]"),x="")+
-        theme_classic()+scale_x_datetime(limits = range(data$date))
+    labs(y=ylabs[4],x="")+
+        theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+scale_y_continuous(limits = range(all_plot$q_interpol,na.rm = T))+theme(axis.text.x = element_blank())
       
       #vertikalarrangement der drei plots mit übereinstimmender x-achse
       p<-plot_grid(co2_plot,bf_plot,q_plot,align = "v",ncol=1,rel_heights = c(2,1,1))
   }
   
+  if(scale==F){
+    lf_plot<-lf_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
+  }
+  if(scale==F){
+    q_plot<-q_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
+  }
   #falls alle Vier datensätze vorliegen
   if(length(data$q)!=0 & length(data$lf)!=0){
     #vertikalarrangement der vier plots mit übereinstimmender x-achse
@@ -96,11 +113,20 @@ plot_all<-function(data,#datensatz
     #dateipfad für plots
     plotpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/abbildungen/plots/"
     #wird eine pdf mit dem angegebenen name gespeichert
+    if(show.legend==T){
     pdf(paste0(plotpfad,name,".pdf"),width = width,height = height)
-      grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA)))
-    dev.off()
+
+      grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA)))    
+      dev.off()
+    }else{
+      p+ggsave(paste0(plotpfad,name,".pdf"),width = width,height = height)
+    }
+
   }else{
-    #ansonsten wird der plot angezeigt
+    #ansonsten wird der plot angezeigt    
+    if(show.legend==T){
   return(grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA))))
+    }else{
+      return(p)}
 }
 }

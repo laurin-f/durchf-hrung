@@ -33,7 +33,7 @@ A<-pi*r^2#cm2 area
 volprobe<-6^3
 Vol<-1.803*1000-volprobe
 
-resp_undist<-slope*Vol/A/10^6#ppm/min/cm2
+resp_undist<-slope*Vol/A/10^6#ppm*10^6*cm3/min/cm2 = cm/min
 resp_undist
 
 #######################################

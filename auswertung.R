@@ -28,6 +28,9 @@ okt18<-read_all(datum="18.10",start = "09:30")
 
 okt22<-read_all(datum="22.10",start = "14:06")
 
+luecke<-which(as.numeric(diff(okt22$date[!is.na(okt22$q)]))>60)
+okt22$q_interpol[okt22$date>okt22$date[!is.na(okt22$q)][luecke]&okt22$date<okt22$date[!is.na(okt22$q)][luecke+1]]<-NA
+
 #bei änderung der cafm unter zeitumstellung neu einladen 
 load("C:/Users/ThinkPad/Documents/Masterarbeit/daten/okt26.R")
 
@@ -43,6 +46,8 @@ nov21<-read_all(datum="21.11",start="10:58")
 
 nov29<-read_all(datum="29.11",start="12:31")
 
+dez05<-read_all(datum="05.12",start="09:37")
+
 
 
 ##########################################################
@@ -50,9 +55,9 @@ nov29<-read_all(datum="29.11",start="12:31")
 all_list<-list(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all_s<-rbind(okt18,okt22,okt26,okt31)
-plot(all_s$date,all_s$CO2_raw)
+plot(all_s$date[all_s$tiefe==-10],all_s$CO2_raw[all_s$tiefe==-10])
 tiefenstufen<-c(0,-2,-6,-10,-14,-17)
-
+all_s$t_min[all_s$tiefe==-10][5000]
 # for(i in 1:6){
 # sub<-all_s$date[all_s$tiefe==tiefenstufen[i]]
 # gap<-which(diff(sub)>60*24*4)
@@ -61,7 +66,9 @@ tiefenstufen<-c(0,-2,-6,-10,-14,-17)
 # all_s$date[all_s$tiefe==tiefenstufen[i]]<-sub
 # }
 
-alldist<-rbind(nov29)
+all_plot<-rbind(okt18,okt26,okt31)
+
+alldist<-rbind(nov29,dez05)
 save(all,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
 
 
@@ -107,21 +114,34 @@ ggplot(okt31)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 #Übersichtsplots
 ##########################################################
 plot_all(okt10)
+dev.off()
 plot_all(okt15)#,name="15.10_int50mm8h",height = 9)
-plot_all(okt18)#,name="18.10_int50mm3h",height = 9)
+p1<-plot_all(okt18,show.legend = F)#,name="okt18_3h",height = 9,width=4)
 plot_all(okt18[1:5])
 plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
 plot_all(okt22[,1:6])
-plot_all(okt26)#,name="26.10_int50mm8h",height = 9)
-plot_all(okt31)#,name="31.10_int50mm50h",height = 9)
+p2<-plot_all(data=okt26,show.legend = F,ylabs=rep("",4),scale=F)#,name="okt26_8h",height = 9, width= 4)
+p3<-plot_all(okt31,ylabs=rep("",4),scale=F)#,name="okt31_50h",height = 9,width = 6)
 plot_all(nov07)#,name="07.11_int50mm50h",height = 9)
 plot_all(nov14)#,name="14.11_int50mm50h",height = 9)
+
+p1<-plot_all(okt18,show.legend = F)
+p2<-plot_all(data=rbind(okt26,okt31),show.legend = T,ylabs=rep("",4),scale=F)
+#p3<-plot_all(okt31,ylabs=rep("",4),scale=F)
+pdf(paste0(plotpfad,"uebersicht_messungen.pdf"),width = 7,height = 9)
+grid.arrange(p1,p2,ncol=2,layout_matrix=rbind(c(rep(1,5),rep(2,12),4)))
+dev.off()
 
 plot_all(nov21)#,name="21.11_int50mm3h",height = 9)
 plot_all(nov29)#,name="29.11_int50mm3h",height = 9)
 
+plot_all(dez05)#,name="29.11_int50mm3h",height = 9)
+
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)
+plot_all(all_s)#,name="3850_alles",height = 6)
+
+plot_all(alldist,point = T)
 plot_all(okt151822,point = F)#,name = "int50mm3h&50mm8h")
 plot(all$CO2_raw[all$tiefe==-2],type="l")
 
