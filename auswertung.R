@@ -48,16 +48,18 @@ nov29<-read_all(datum="29.11",start="12:31")
 
 dez05<-read_all(datum="05.12",start="09:37")
 
+dez11<-read_all(datum="11.12",start="11:55")
 
+plot(dez11$lf)
 
 ##########################################################
 #Alle in einen Datensatz
 all_list<-list(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all_s<-rbind(okt18,okt22,okt26,okt31)
-plot(all_s$date[all_s$tiefe==-10],all_s$CO2_raw[all_s$tiefe==-10])
+
 tiefenstufen<-c(0,-2,-6,-10,-14,-17)
-all_s$t_min[all_s$tiefe==-10][5000]
+
 # for(i in 1:6){
 # sub<-all_s$date[all_s$tiefe==tiefenstufen[i]]
 # gap<-which(diff(sub)>60*24*4)
@@ -69,8 +71,11 @@ all_s$t_min[all_s$tiefe==-10][5000]
 all_plot<-rbind(okt18,okt26,okt31)
 
 alldist<-rbind(nov29,dez05)
-save(all,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
 
+
+save(all,all_s,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+
+#save(all,all_s,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all_s.R")
 
 events<-event()
 
@@ -94,7 +99,11 @@ ggplot(all)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 #Reaktion der Unteschiedlichen Tiefen in Miunten anch Event
 ##########################################################
 library(ggplot2)
-ggplot(subset(all,tiefe%in%c(-10,-14)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)+theme_classic()+labs(col=expression("Intensität [mm h"^{-1}*"]"))+ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 7)
+named<-setNames(as.character(c(-2,-6,-10,-14)),c(2,6,10,14))
+
+all$CO2_raw[all$t_min<0]<-NA
+
+ggplot(subset(all,tiefe%in%c(-2,-6,-10,-14)),aes(t_min,CO2_raw,col=as.factor(treatment)))+geom_path()+facet_wrap(~(-tiefe),nrow = 4,scales = "free",labeller =  as_labeller(named))+theme_classic()+labs(x="Zeit [min]",y=expression("CO"[2]*" [ppm]]"),col=expression("Intensität [mm h"^{-1}*"]"))+ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 7)
 
 ggplot(subset(all,tiefe%in%c(-2,-6)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)
 
@@ -135,7 +144,8 @@ dev.off()
 plot_all(nov21)#,name="21.11_int50mm3h",height = 9)
 plot_all(nov29)#,name="29.11_int50mm3h",height = 9)
 
-plot_all(dez05)#,name="29.11_int50mm3h",height = 9)
+plot_all(dez05)#,name="05.12_int50mm8h",height = 9)
+plot_all(dez11)#,name="11.12_int50mm3h",height = 9)
 
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)
