@@ -1,15 +1,23 @@
 source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")
 
+#packages laden
 library(readxl)
 library(stringr)
+
+#pfade festlegen
 capath<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/ca/"
 lfpfad<-"C:/Users/ThinkPad/Documents/Masterarbeit/daten/leitf/"
 
+
+#dateien einlesen
 kat17.10<-read.csv(paste0(capath,"ca_17.10.csv"),sep=";",skip=6,na.strings = "n.a.",stringsAsFactors = F)
 kat05.11<-read.csv(paste0(capath,"ca_05.11.csv"),sep=";",skip=6,na.strings = "n.a.",stringsAsFactors = F)
 kat23.11<-read.csv(paste0(capath,"ca_23.11.csv"),sep=";",skip=6,na.strings = "n.a.",stringsAsFactors = F)
+kat_19.12<-read.csv(paste0(capath,"ca_19.12.csv"),sep=";",skip=6,na.strings = "n.a.",stringsAsFactors = F)
 
-kat_all<-rbind(kat17.10,kat05.11,kat23.11)
+
+
+kat_all<-rbind(kat17.10,kat05.11,kat23.11,kat_19.12)
 
 lf<-read.csv(paste0(lfpfad,"lf_saugkerzen.csv"),sep=";",stringsAsFactors = F)
 
@@ -25,6 +33,7 @@ ic<-merge(data.frame(tiefe=tiefe,ca=ca,datum=datum,stringsAsFactors = F),lf,all=
 
 ic$datum[is.na(ic$datum)]<-"regen"
 
+
 plot(ic$ca~ic$lf)
 cafm<-glm(ca~lf,data = ic)
 lfs<-seq(min(ic$lf,na.rm = T),max(ic$lf,na.rm = T),1)
@@ -34,19 +43,25 @@ rsq<-(1-cafm$deviance/cafm$null.deviance)*100
 text(170,60,paste("linear R² = ",round(rsq,2)))
 
 
+
 ic$tiefenstufe<-ic$tiefe
 ic$tiefe<-ifelse(ic$tiefenstufe==5,-17,-(ic$tiefenstufe*4-2))
 ic$tiefe[ic$tiefe==2]<-0
 ints<-event()
 
 ic<-merge(ic,ints[,6:7],all=T)
+ic<-subset(ic,round(rain_mm_h)!=16)
+ic$treatment<-round(ic$rain_mm_h)
+ic$sample<-ifelse(parse_date_time(ic$datum,"dm")>="0000-11-29 UTC","dist","undist")
 
-
+icmean<-aggregate(ic[2:7],list(ic$treatment,ic$tiefe,ic$sample),mean)
+names<-paste("Intensität =",unique(ic$treatment),"mm/h")
+names[c(1,3)]<-paste(unique(ic$treatment)[c(1,3)],"mm/h")
+named<-setNames(names,unique(ic$treatment))
 library(ggplot2)
 legendtitle<-expression("Intensität [mm*h"^{-1}*"]")
-ggplot()+
-  geom_point(data=subset(ic,!is.na(rain_mm_h)),aes(ca,tiefe,col=as.factor(round(rain_mm_h)),shape=as.factor(round(rain_mm_h))))+
-  labs(x=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),y="tiefe [cm]",col=legendtitle,shape=legendtitle)+theme_classic()
+ggplot()+geom_path(data=icmean,aes(ca,tiefe,col=Group.3))+
+  geom_point(data=subset(ic,!is.na(rain_mm_h)),aes(ca,tiefe,col=sample))+facet_wrap(~treatment,labeller = as_labeller(named))+labs(x=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),y="tiefe [cm]",col="Probe")+theme_bw()
 
 lf<-merge(lf,ints[,6:7])
 

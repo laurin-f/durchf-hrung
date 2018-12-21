@@ -12,7 +12,8 @@ plot_all<-function(data,#datensatz
                            expression(theta*"  [VOl %]"),
                            expression("LF  ["*mu*"S * cm"^{-1}*"]"),
                            expression("q  [ml * min"^{-1}*"]")),
-                   scale=T){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
+                   scale=T,
+                   lfmin=250){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
   #package für schöne plots
   library(ggplot2)
   #packages um plots zu arrangieren
@@ -78,7 +79,7 @@ plot_all<-function(data,#datensatz
       geom_line(data=subset(data,tiefe==-17),aes(date,lf),show.legend = F,na.rm = T)+
       geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
     labs(y=ylabs[3],x="")+
-      theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))#+scale_y_continuous(limits = c(250,max(all_plot$lf,na.rm = T)))
+      theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+scale_y_continuous(limits = c(lfmin,max(data$lf)))#+scale_y_continuous(limits = c(250,max(all_plot$lf,na.rm = T)))
     
     #vertikalarrangement der drei plots mit übereinstimmender x-achse
     p<-plot_grid(co2_plot,bf_plot,lf_plot,align = "v",ncol=1,rel_heights = c(2,1,1))

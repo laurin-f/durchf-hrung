@@ -50,7 +50,8 @@ dez05<-read_all(datum="05.12",start="09:37")
 
 dez11<-read_all(datum="11.12",start="11:55")
 
-plot(dez11$lf)
+dez17<-read_all(datum="17.12",start="09:54")
+
 
 ##########################################################
 #Alle in einen Datensatz
@@ -70,7 +71,8 @@ tiefenstufen<-c(0,-2,-6,-10,-14,-17)
 
 all_plot<-rbind(okt18,okt26,okt31)
 
-alldist<-rbind(nov29,dez05)
+alldist<-rbind(nov29,dez05,dez11,dez17)
+alldist_plot<-rbind(dez11,dez17)
 
 
 save(all,all_s,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
@@ -125,19 +127,18 @@ ggplot(okt31)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 plot_all(okt10)
 dev.off()
 plot_all(okt15)#,name="15.10_int50mm8h",height = 9)
-p1<-plot_all(okt18,show.legend = F)#,name="okt18_3h",height = 9,width=4)
+plot_all(okt18,show.legend = F)#,name="okt18_3h",height = 9,width=4)
 plot_all(okt18[1:5])
 plot_all(okt22)#,name="22.10_int50mm3h",height = 9)
 plot_all(okt22[,1:6])
-p2<-plot_all(data=okt26,show.legend = F,ylabs=rep("",4),scale=F)#,name="okt26_8h",height = 9, width= 4)
-p3<-plot_all(okt31,ylabs=rep("",4),scale=F)#,name="okt31_50h",height = 9,width = 6)
+plot_all(data=okt26,show.legend = F,ylabs=rep("",4),scale=F)#,name="okt26_8h",height = 9, width= 4)
+plot_all(okt31,ylabs=rep("",4),scale=F)#,name="okt31_50h",height = 9,width = 6)
 plot_all(nov07)#,name="07.11_int50mm50h",height = 9)
 plot_all(nov14)#,name="14.11_int50mm50h",height = 9)
 
-p1<-plot_all(okt18,show.legend = F)
-p2<-plot_all(data=rbind(okt26,okt31),show.legend = T,ylabs=rep("",4),scale=F)
-#p3<-plot_all(okt31,ylabs=rep("",4),scale=F)
-pdf(paste0(plotpfad,"uebersicht_messungen.pdf"),width = 7,height = 9)
+p1<-plot_all(okt18,show.legend = F,lfmin = 250)
+p2<-plot_all(data=rbind(okt26,okt31),show.legend = T,ylabs=rep("",4),scale=F,lfmin = 250)
+pdf(paste0(plotpfad,"uebersicht_messungen.pdf"),width = 7,height = 6)
 grid.arrange(p1,p2,ncol=2,layout_matrix=rbind(c(rep(1,5),rep(2,12),4)))
 dev.off()
 
@@ -147,11 +148,15 @@ plot_all(nov29)#,name="29.11_int50mm3h",height = 9)
 plot_all(dez05)#,name="05.12_int50mm8h",height = 9)
 plot_all(dez11)#,name="11.12_int50mm3h",height = 9)
 
+plot_all(dez17)#,name="11.12_int50mm3h",height = 9)
+
 plot_all(all[,1:6])#,name="alle",height = 6)
 plot_all(all)#,name="alle_alles",height = 6)
 plot_all(all_s)#,name="3850_alles",height = 6)
 
-plot_all(alldist,point = T)
+
+plot_all(alldist)
+plot_all(alldist_plot,name="uebersicht_dist",height = 6,width = 7,lfmin=400)
 plot_all(okt151822,point = F)#,name = "int50mm3h&50mm8h")
 plot(all$CO2_raw[all$tiefe==-2],type="l")
 
