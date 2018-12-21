@@ -73,7 +73,13 @@ all_plot<-rbind(okt18,okt26,okt31)
 
 alldist<-rbind(nov29,dez05,dez11,dez17)
 alldist_plot<-rbind(dez11,dez17)
+range_all_s<-range(all_s$date)
+ca_mavg_l<-lapply(all_list,function(x) zoo::rollapply(x$ca_conc[!is.na(x$ca_conc)],50,mean,fill=NA))
+ca_mavg<-do.call("c",ca_mavg_l)
 
+all$ca_conc[!is.na(all$ca_conc)][c(2,diff(ca_mavg))>0.2|all$ca_conc[!is.na(all$ca_conc)]<50]<-NA
+
+all_s<-all[all$date>=min(range_all_s)&all$date<=max(range_all_s),]
 
 save(all,all_s,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
 
