@@ -59,21 +59,18 @@ all_list<-list(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all<-rbind(okt15,okt18,okt22,okt26,okt31,nov07,nov14)
 all_s<-rbind(okt18,okt22,okt26,okt31)
 
-tiefenstufen<-c(0,-2,-6,-10,-14,-17)
-
-# for(i in 1:6){
-# sub<-all_s$date[all_s$tiefe==tiefenstufen[i]]
-# gap<-which(diff(sub)>60*24*4)
-# tdiff<-diff(sub)[gap]
-# sub[(gap+1):length(sub)]<-sub[(gap+1):length(sub)]-tdiff+60
-# all_s$date[all_s$tiefe==tiefenstufen[i]]<-sub
-# }
-
 all_plot<-rbind(okt18,okt26,okt31)
 
+alldist_list<-list(nov29,dez05,dez11,dez17)
 alldist<-rbind(nov29,dez05,dez11,dez17)
+alldist_s<-rbind(dez05,dez11,dez17)
+
 alldist_plot<-rbind(dez11,dez17)
+
+plot(alldist_s$ca_conc)
+
 range_all_s<-range(all_s$date)
+
 ca_mavg_l<-lapply(all_list,function(x) zoo::rollapply(x$ca_conc[!is.na(x$ca_conc)],50,mean,fill=NA))
 ca_mavg<-do.call("c",ca_mavg_l)
 
@@ -81,7 +78,18 @@ all$ca_conc[!is.na(all$ca_conc)][c(2,diff(ca_mavg))>0.2|all$ca_conc[!is.na(all$c
 
 all_s<-all[all$date>=min(range_all_s)&all$date<=max(range_all_s),]
 
-save(all,all_s,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+range_alldist_s<-range(alldist_s$date)
+
+ca_mavg_l<-lapply(alldist_list,function(x) zoo::rollapply(x$ca_conc[!is.na(x$ca_conc)],50,mean,fill=NA))
+ca_mavg<-do.call("c",ca_mavg_l)
+
+alldist$ca_conc[!is.na(alldist$ca_conc)][c(2,diff(ca_mavg))>0.2|alldist$ca_conc[!is.na(alldist$ca_conc)]<50]<-NA
+
+alldist_s<-alldist[alldist$date>=min(range_alldist_s)&alldist$date<=max(range_alldist_s),]
+points(alldist_s$ca_conc,col=2)
+
+save(all,all_s,alldist,alldist_s,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
+plot(all$CO2)
 
 #save(all,all_s,alldist,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all_s.R")
 
