@@ -115,11 +115,15 @@ ggplot(all)+geom_line(aes(date,theta,col=as.factor(tiefe)))
 #Reaktion der Unteschiedlichen Tiefen in Miunten anch Event
 ##########################################################
 library(ggplot2)
-named<-setNames(as.character(c(-2,-6,-10,-14)),c(2,6,10,14))
+named<-setNames(as.character(c("Tiefe= -2 cm","-6 cm","-10 cm","-14 cm")),c(2,6,10,14))
 
 all$CO2_raw[all$t_min<0]<-NA
 
-ggplot(subset(all,tiefe%in%c(-2,-6,-10,-14)),aes(t_min,CO2_raw,col=as.factor(treatment)))+geom_path()+facet_wrap(~(-tiefe),nrow = 4,scales = "free",labeller =  as_labeller(named))+theme_classic()+labs(x="Zeit [min]",y=expression("CO"[2]*" [ppm]]"),col=expression("Intensität [mm h"^{-1}*"]"))+ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 7)
+ggplot(subset(all,tiefe%in%c(-2,-6,-10,-14)&!is.na(treatment)),aes(t_min/(60*24),CO2_raw,col=as.factor(treatment)))+geom_path()+facet_wrap(~(-tiefe),nrow = 4,scales = "free",labeller =  as_labeller(named))+theme_classic()+labs(x="Zeit [Tage]",y=expression("CO"[2]*" [ppm]"),col=expression("Intensität [mm h"^{-1}*"]"))+scale_x_continuous(breaks = 0:10)+ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 7)
+
+alldist$CO2_raw[alldist$t_min<0]<-NA
+
+ggplot(subset(alldist,tiefe%in%c(-2,-6,-10,-14)&!is.na(treatment)),aes(t_min/(60*24),CO2_raw,col=as.factor(treatment)))+geom_path()+facet_wrap(~(-tiefe),nrow = 4,scales = "free",labeller =  as_labeller(named))+theme_classic()+labs(x="Zeit [Tage]",y=expression("CO"[2]*" [ppm]"),col=expression("Intensität [mm h"^{-1}*"]"))+scale_x_continuous(breaks = 0:10)+ggsave(paste0(plotpfad,"mins_nach_Event_dist.pdf"),width = 7,height = 7)
 
 ggplot(subset(all,tiefe%in%c(-2,-6)),aes(t_min,CO2,col=as.factor(treatment)))+geom_path()+facet_wrap(~tiefe,nrow = 2)
 
@@ -152,7 +156,7 @@ plot_all(nov14)#,name="14.11_int50mm50h",height = 9)
 
 p1<-plot_all(okt18,show.legend = F,lfmin = 250)
 p2<-plot_all(data=rbind(okt26,okt31),show.legend = T,ylabs=rep("",4),scale=F,lfmin = 250)
-pdf(paste0(plotpfad,"uebersicht_messungen.pdf"),width = 7,height = 6)
+pdf(paste0(plotpfad,"uebersicht_messungen.pdf"),width = 8,height = 5.5)
 grid.arrange(p1,p2,ncol=2,layout_matrix=rbind(c(rep(1,5),rep(2,12),4)))
 dev.off()
 
@@ -170,7 +174,11 @@ plot_all(all_s)#,name="3850_alles",height = 6)
 
 
 plot_all(alldist)
-plot_all(alldist_plot,name="uebersicht_dist",height = 6,width = 7,lfmin=400)
+
+pdist<-plot_all(alldist_plot,height = 6,width = 7,lfmin=400)
+pdf(paste0(plotpfad,"uebersicht_dist.pdf"),width = 8,height = 5.5)
+grid.arrange(pdist,ncol=2,layout_matrix=rbind(c(rep(1,40),2)))
+dev.off()
 plot_all(okt151822,point = F)#,name = "int50mm3h&50mm8h")
 plot(all$CO2_raw[all$tiefe==-2],type="l")
 
@@ -197,4 +205,16 @@ ggplot(okt15,aes(date,temp,col=as.factor(tiefe)))+geom_point()
 
 ggplot(all,aes(date,temp,col=as.factor(tiefe)))+geom_point()
 
+co2mean<-aggregate(all$CO2_raw,list(all$tiefe),function(x) mean(x,na.rm = T))
+
+co2mean_dist<-aggregate(alldist$CO2_raw,list(alldist$tiefe),function(x) mean(x,na.rm = T))
+co2range[,2][,1]
+co2range<-aggregate(all$CO2_raw,list(all$tiefe),function(x) range(x,na.rm = T))
+co2range_vals<-c(co2range[2:5,2][,1],rev(co2range[2:5,2][,2]))
+range_undist<-data.frame(co2=co2range_vals,tiefe=c(co2range[2:5,1],rev(co2range[2:5,1])))
+co2range_dist<-aggregate(alldist$CO2_raw,list(alldist$tiefe),function(x) range(x,na.rm = T))
+co2range_vals_dist<-c(co2range_dist[2:5,2][,1],rev(co2range_dist[2:5,2][,2]))
+range_dist<-data.frame(co2=co2range_vals_dist,tiefe=c(co2range_dist[2:5,1],rev(co2range_dist[2:5,1])))
+
+ggplot()+geom_path(data=co2mean[2:5,],aes(x,Group.1,col="ungestört"))+geom_path(data=co2mean_dist[2:5,],aes(x,Group.1,col="gestört"))+geom_polygon(data=range_undist,aes(co2,tiefe,fill="ungestört"),col=0,alpha=0.3,show.legend = F)+geom_polygon(data=range_dist,aes(co2,tiefe,fill="gestört"),col=0,alpha=0.3,show.legend = F)+labs(x=expression("CO"[2]*"  [ppm]"),y="Tiefe [cm]",col="")+theme_classic()+ggsave(paste0(plotpfad,"co2_tiefenprofil.pdf"),width=6,height = 4.5)
 

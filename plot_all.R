@@ -29,8 +29,8 @@ plot_all<-function(data,#datensatz
   #plot der CO2 daten 
   co2_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf,fill=""), alpha = 0.15)+
-    labs(y=ylabs[1],x="",col="tiefe")+
-    theme_classic()+scale_fill_manual(name="event",values="blue")+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
+    labs(y=ylabs[1],x="",col="Tiefe [cm]")+
+    theme_classic()+scale_fill_manual(name="Beregnung",values="blue")+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
   
   #wenn point=T wird geom_point verwendet ...
   if(point==T){
@@ -55,7 +55,7 @@ plot_all<-function(data,#datensatz
   if(length(data$theta)!=0){   
   bf_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
-    labs(y=ylabs[2],x="",col="tiefe")+
+    labs(y=ylabs[2],x="",col="Tiefe [cm]")+
     theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+theme(axis.text.x = element_blank())
   
   #wenn point=T wird geom_point verwendet ...
@@ -70,7 +70,7 @@ plot_all<-function(data,#datensatz
     bf_plot<-bf_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
   }
   #vertikalarrangement der zwei plots mit übereinstimmender x-achse
-  p<-plot_grid(co2_plot,bf_plot,align = "v",ncol=1,rel_heights = c(2,1))
+  p<-plot_grid(co2_plot,bf_plot,align = "v",ncol=1,rel_heights = c(1,1))
   }
   
   #plot der Leitfähigkeit falls vorhanden
@@ -82,7 +82,7 @@ plot_all<-function(data,#datensatz
       theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+scale_y_continuous(limits = c(lfmin,max(data$lf)))#+scale_y_continuous(limits = c(250,max(all_plot$lf,na.rm = T)))
     
     #vertikalarrangement der drei plots mit übereinstimmender x-achse
-    p<-plot_grid(co2_plot,bf_plot,lf_plot,align = "v",ncol=1,rel_heights = c(2,1,1))
+    p<-plot_grid(co2_plot,bf_plot,lf_plot,align = "v",ncol=1,rel_heights = c(1,1,1))
   }
 
   #plot der Abflussdaten falls vorhanden
@@ -106,7 +106,7 @@ plot_all<-function(data,#datensatz
   #falls alle Vier datensätze vorliegen
   if(length(data$q)!=0 & length(data$lf)!=0){
     #vertikalarrangement der vier plots mit übereinstimmender x-achse
-  p<-plot_grid(co2_plot,bf_plot,q_plot,lf_plot,align = "v",ncol=1,rel_heights = c(2,1,1,1))
+  p<-plot_grid(co2_plot,bf_plot,q_plot,lf_plot,align = "v",ncol=1,rel_heights = c(1.8,1.2,1,1))
   }
   
   #falls der Name angegeben wurde ...

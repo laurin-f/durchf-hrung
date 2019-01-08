@@ -71,8 +71,9 @@ legendtitle<-expression("Intensität [mm*h"^{-1}*"]")
 ggplot()+geom_path(data=icmean,aes(ca,tiefe,col=Group.3))+
   geom_point(data=subset(ic,!is.na(rain_mm_h)),aes(ca,tiefe,col=sample))+facet_wrap(~treatment,labeller = as_labeller(named))+labs(x=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),y="Tiefe [cm]",col="Probe")+theme_bw()+ggsave(paste0(plotpfad,"ca_tiefenprofil.pdf"),width = 8,height = 6)
 
-ggplot(ic)+geom_point(aes(rain_mm_h,ca,col=as.factor(tiefe)))+facet_wrap(~sample)+geom_smooth(aes(rain_mm_h,ca,col=as.factor(tiefe)),method = "glm",se=F,linetype=1)+labs(y=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),x=expression("Intensität [mm*h"^{-1}*"]"),col="Tiefe [cm]")+theme_bw()+ggsave(paste0(plotpfad,"ca_intensität.pdf"),width = 8,height = 6)
+gest<-setNames(c("gestört","ungestört"),c("dist","undist"))
+ggplot(ic)+geom_point(aes(rain_mm_h,ca,col=as.factor(tiefe)))+facet_wrap(~sample,labeller = as_labeller(gest))+geom_smooth(aes(rain_mm_h,ca,col=as.factor(tiefe)),method = "glm",se=F,linetype=1)+labs(y=expression("Ca"^{"2+"}*"  [mg * l"^{-1}*"]"),x=expression("Intensität [mm*h"^{-1}*"]"),col="Tiefe [cm]")+theme_bw()+ggsave(paste0(plotpfad,"ca_int.pdf"),width = 7,height = 4)
 
-ggplot(ic)+geom_point(aes(rain_mm_h,ca_mg,col=as.factor(tiefe)))+facet_wrap(~sample)+geom_smooth(aes(rain_mm_h,ca_mg,col=as.factor(tiefe)),method = "glm",se=F,linetype=1)+labs(y=expression("Ca"^{"2+"}*"  [mg]"),x=expression("Intensität [mm*h"^{-1}*"]"),col="Tiefe [cm]")+theme_bw()+ggsave(paste0(plotpfad,"ca_intensität_mg.pdf"),width = 8,height = 6)
+ggplot(ic)+geom_point(aes(rain_mm_h,ca_mg,col=as.factor(tiefe)))+facet_wrap(~sample,labeller = as_labeller(gest))+geom_smooth(aes(rain_mm_h,ca_mg,col=as.factor(tiefe)),method = "glm",se=F,linetype=1)+labs(y=expression("Ca"^{"2+"}*"  [mg]"),x=expression("Intensität [mm*h"^{-1}*"]"),col="Tiefe [cm]")+theme_bw()+ggsave(paste0(plotpfad,"ca_int_mg.pdf"),width = 7,height = 4)
 
 save(ic,cafm,file=paste0(capath,"cafm.R"))
