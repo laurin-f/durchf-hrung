@@ -10,8 +10,8 @@ plot_all<-function(data,#datensatz
                    show.legend=T,
                    ylabs=c(expression("CO"[2]*"  [ppm]"),
                            expression(theta*"  [VOl %]"),
-                           expression("LF  ["*mu*"S * cm"^{-1}*"]"),
-                           expression("q  [ml * min"^{-1}*"]")),
+                           expression("LF  ["*mu*"S / cm]"),
+                           expression("q  [ml / min]")),
                    scale=T,
                    lfmin=250){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
   #package für schöne plots
