@@ -112,6 +112,7 @@ ic_poly$ca<-c(icrange$ca[,1],rev(icrange$ca[,2]))
 ###############################################
 #Plots
 ###############################################
+cols<-hue_pal()(3)
 
 #namensvektor für label erstellen
 names<-paste("Intensität =",unique(ic$treatment),"mm/h")
@@ -133,6 +134,8 @@ ggplot()+
   geom_point(data=subset(ic,!is.na(rain_mm_h)),aes(ca,tiefe,col=as.factor(treatment)))+
   facet_wrap(~sample,labeller = as_labeller(setNames(c("gestört","ungestört"),c("dist","undist"))),scales = "free_x")+
   labs(x=expression("Ca"^{"2+"}*"  [mg / l]"),y="Tiefe [cm]",col=expression("Intensität \n [mm / h]"))+
+  scale_color_manual(values = cols[c(2,1,3)])+
+  scale_fill_manual(values = cols[c(2,1,3)])+
   theme_bw()+
   ggsave(paste0(plotpfad,"ca_tiefenprofil.pdf"),width = 7,height = 4)
 

@@ -63,8 +63,9 @@ all_plot<-rbind(okt18,okt26,okt31)
 
 #unterschiedliche zusammengefasst gestörte Probe
 alldist_list<-list(nov29,dez05,dez11,dez17)
-alldist$CO2_raw[alldist$tiefe==-10&alldist$date<min(dez11$date)]<-NA
+
 alldist<-rbind(nov29,dez05,dez11,dez17)
+alldist$CO2_raw[alldist$tiefe==-10&alldist$date<min(dez11$date)]<-NA
 alldist_s<-rbind(dez05,dez11,dez17)
 alldist_plot<-rbind(dez11,dez17)
 
@@ -102,11 +103,10 @@ alldist$ca_conc[!is.na(alldist$ca_conc)][c(2,diff(ca_mavg))>0.2|alldist$ca_conc[
 
 #für alldist_s übernehmen
 alldist_s<-alldist[alldist$date>=min(range_alldist_s)&alldist$date<=max(range_alldist_s),]
-points(alldist_s$ca_conc,col=2)
 
 #speichern der Datensätze in all.R
 save(all,all_s,alldist,alldist_s,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
-
+plot(alldist_s$CO2_raw)
 
 
 
@@ -120,6 +120,9 @@ library(ggplot2)
 #events laden
 events<-event()
 
+
+cols<-hue_pal()(3)
+
 #namen vektor für labeller
 named_tief<-setNames(as.character(c("Tiefe= -2 cm","-6 cm","-10 cm","-14 cm")),c(2,6,10,14))
 
@@ -129,22 +132,25 @@ all$CO2_raw[all$t_min<0]<-NA
 #CO2 t_min plot undist
 ggplot(subset(all,tiefe%in%c(-2,-6,-10,-14)&!is.na(treatment)),aes(t_min/(60*24),CO2_raw,col=as.factor(treatment)))+
   geom_path()+
-  facet_wrap(~(-tiefe),nrow = 4,scales = "free",labeller =  as_labeller(named_tief))+
+  facet_wrap(~(-tiefe),nrow = 2,scales = "free",labeller =  as_labeller(named_tief))+
   theme_classic()+
   labs(x="Zeit [Tage]",y=expression("CO"[2]*" [ppm]"),col="Intensität \n [mm / h]")+
-  scale_x_continuous(breaks = 0:10)+
+  scale_x_continuous(breaks = 0:10,limits = c(0,max(all$t_min/(60*24))))+
+  scale_color_manual(values = cols[c(2,1,3)])+
   ggsave(paste0(plotpfad,"mins_nach_Event.pdf"),width = 7,height = 5)
 
 #anfangswerte NA auch für dist
 alldist$CO2_raw[alldist$t_min<0]<-NA
 
+
 #CO2 t_min plot dist
 ggplot(subset(alldist,tiefe%in%c(-2,-6,-10,-14)&!is.na(treatment)),aes(t_min/(60*24),CO2_raw,col=as.factor(treatment)))+
   geom_path()+
-  facet_wrap(~(-tiefe),nrow = 4,scales = "free",labeller =  as_labeller(named_tief))+
+  facet_wrap(~(-tiefe),nrow = 2,scales = "free",labeller =  as_labeller(named_tief))+
   theme_classic()+
   labs(x="Zeit [Tage]",y=expression("CO"[2]*" [ppm]"),col="Intensität \n [mm / h]")+
-  scale_x_continuous(breaks = 0:10)+
+  scale_x_continuous(breaks = 0:10,limits = c(0,max(alldist$t_min/(60*24))))+
+  scale_color_manual(values = cols[c(1,3)])+
   ggsave(paste0(plotpfad,"mins_nach_Event_dist.pdf"),width = 7,height = 5)
 
 ######################
@@ -160,6 +166,7 @@ ggplot(subset(all,tiefe==-17&!is.na(treatment)&(date<min(nov07$date)|date>max(no
   theme_classic()+
   labs(x="Zeit [Tage]",y=expression("Ca"^{"2+"}*"  [mg / l]"),col=expression("Intensität \n [mm / h]"))+
   scale_x_continuous(breaks = 0:10)+
+  scale_color_manual(values = cols[c(2,1,3)])+
   facet_wrap(~treatment,ncol=1)+
   ggsave(paste0(plotpfad,"ca_t_min.pdf"),width = 6,height = 5)
 
@@ -174,6 +181,7 @@ ggplot(subset(alldist,tiefe==-17))+
   geom_line(aes(date,ca_conc,col=as.factor(treatment)))+
   labs(x="",y=expression("Ca"^{"2+"}*"  [mg / l]"),col="Intensität \n [mm / h]")+
   geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf,fill=""), alpha = 0.15)+
+  scale_color_manual(values = cols[c(1,3)])+
   scale_fill_manual(name="Beregnung",values="blue")+
   theme_classic()+
   ggsave(paste0(plotpfad,"ca_t_min_dist.pdf"),width = 6,height = 3)
