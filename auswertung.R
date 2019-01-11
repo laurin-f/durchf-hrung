@@ -121,8 +121,9 @@ library(ggplot2)
 events<-event()
 
 
-cols<-hue_pal()(3)
+cols<-scales::hue_pal()(3)
 
+??hue_pal
 #namen vektor für labeller
 named_tief<-setNames(as.character(c("Tiefe= -2 cm","-6 cm","-10 cm","-14 cm")),c(2,6,10,14))
 

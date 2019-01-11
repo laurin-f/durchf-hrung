@@ -112,7 +112,9 @@ ic_poly$ca<-c(icrange$ca[,1],rev(icrange$ca[,2]))
 ###############################################
 #Plots
 ###############################################
-cols<-hue_pal()(3)
+
+#farben für plots
+cols<-scales::hue_pal()(3)
 
 #namensvektor für label erstellen
 names<-paste("Intensität =",unique(ic$treatment),"mm/h")
