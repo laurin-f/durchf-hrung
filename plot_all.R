@@ -13,7 +13,8 @@ plot_all<-function(data,#datensatz
                            expression("LF  ["*mu*"S / cm]"),
                            expression("q  [ml / min]")),
                    scale=T,
-                   lfmin=250){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
+                   lfmin=250,
+                   date_breaks=T){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
   #package für schöne plots
   library(ggplot2)
   #packages um plots zu arrangieren
@@ -30,17 +31,15 @@ plot_all<-function(data,#datensatz
   co2_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf,fill=""), alpha = 0.15)+
     labs(y=ylabs[1],x="",col="Tiefe [cm]")+
-    theme_classic()+scale_fill_manual(name="Beregnung",values="blue")+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
+    theme_classic()+scale_fill_manual(name="Beregnung",values="blue")+
+    geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)
   
-  #wenn point=T wird geom_point verwendet ...
-  if(point==T){
-      co2_plot<-co2_plot+
-        geom_point(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),shape=20,size=0.5,na.rm = T)+ 
-        guides(colour = guide_legend(override.aes = list(size=3)))
-    }else{#ansonsten geom_line
-      co2_plot<-co2_plot+
-        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)#+scale_y_continuous(limits = range(all_plot$CO2_raw,na.rm = T))
-    }
+  if(date_breaks==T){
+  co2_plot<-co2_plot+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
+  }else{
+    co2_plot<-co2_plot+scale_x_datetime(limits = range(data$date))
+  }
+
   if(scale==F){
     co2_plot<-co2_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
   }
@@ -56,16 +55,15 @@ plot_all<-function(data,#datensatz
   bf_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
     labs(y=ylabs[2],x="",col="Tiefe [cm]")+
-    theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+theme(axis.text.x = element_blank())
+    geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)+
+    theme_classic()
   
-  #wenn point=T wird geom_point verwendet ...
-  if(point==T){
-    bf_plot<-bf_plot+
-      geom_point(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,shape=20,size=0.5,na.rm = T)
-    }else{#ansonsten geom_line
-      bf_plot<-bf_plot+
-        geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)#+scale_y_continuous(limits = range(all_plot$theta,na.rm = T))
-    }
+  if(date_breaks==T){
+      bf_plot<-bf_plot+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+theme(axis.text.x = element_blank())
+  }else{
+    bf_plot<-bf_plot+scale_x_datetime(limits = range(data$date))
+  }
+  
   if(scale==F){
     bf_plot<-bf_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
   }
@@ -79,8 +77,12 @@ plot_all<-function(data,#datensatz
       geom_line(data=subset(data,tiefe==-17),aes(date,lf),show.legend = F,na.rm = T)+
       geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
     labs(y=ylabs[3],x="")+
-      theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+scale_y_continuous(limits = c(lfmin,max(data$lf)))#+scale_y_continuous(limits = c(250,max(all_plot$lf,na.rm = T)))
-    
+      theme_classic()+scale_y_continuous(limits = c(lfmin,max(data$lf)))#+scale_y_continuous(limits = c(250,max(all_plot$lf,na.rm = T)))
+    if(date_breaks==T){
+      lf_plot<-lf_plot+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
+    }else{
+      lf_plot<-lf_plot+scale_x_datetime(limits = range(data$date))
+    }
     #vertikalarrangement der drei plots mit übereinstimmender x-achse
     p<-plot_grid(co2_plot,bf_plot,lf_plot,align = "v",ncol=1,rel_heights = c(1,1,1))
   }
@@ -91,8 +93,12 @@ plot_all<-function(data,#datensatz
         geom_line(data=subset(data,tiefe==-17),aes(date,q_interpol),show.legend = F,na.rm = T)+
         geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
     labs(y=ylabs[4],x="")+
-        theme_classic()+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+theme(axis.text.x = element_blank())#+scale_y_continuous(limits = range(all_plot$q_interpol,na.rm = T))
-      
+        theme_classic()+theme(axis.text.x = element_blank())#+scale_y_continuous(limits = range(all_plot$q_interpol,na.rm = T))
+      if(date_breaks==T){
+        q_plot<-q_plot+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
+      }else{
+        q_plot<-q_plot+scale_x_datetime(limits = range(data$date))
+      }
       #vertikalarrangement der drei plots mit übereinstimmender x-achse
       p<-plot_grid(co2_plot,bf_plot,q_plot,align = "v",ncol=1,rel_heights = c(2,1,1))
   }

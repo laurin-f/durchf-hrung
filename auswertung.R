@@ -220,9 +220,10 @@ plot_all(dez17)
 
 #zusammengefasste Events
 plot_all(all[,1:6])#,name="alle",height = 6)
-plot_all(all)#,name="alle_alles",height = 6)
+p<-plot_all(all,date_breaks = F)
+plot_all(all,name="alle_alles",height = 8,date_breaks = F)
 plot_all(all_s)#,name="3850_alles",height = 6)
-plot_all(alldist)
+plot_all(alldist,name="alledist",height=8,date_breaks = F)
 
 #Ausgewählte Events für die Arbeit
 p1<-plot_all(okt18,show.legend = F,lfmin = 250)

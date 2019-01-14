@@ -99,7 +99,7 @@ ic<-merge(ic,wassermenge[,c(1,4,5)])
 ic$ca_mg<-ic$ca*ic$`wasser [ml]`/1000#mg/l*ml/1000->mg
 
 #Ca mittelwerte der tiefenstufen und intensitäten berechnen 
-icmean<-aggregate(ic[2:7],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),mean)
+icmean<-aggregate(ic[,3:4],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),mean)
 
 #Ca range der tiefenstufen und intensitäten berechnen
 icrange<-aggregate(ic[2:7],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),range)
@@ -141,23 +141,52 @@ ggplot()+
   theme_bw()+
   ggsave(paste0(plotpfad,"ca_tiefenprofil.pdf"),width = 7,height = 4)
 
+#Co2 mittelwerte der unterschiedlichen Tiefenstufen von dist und undist Probe
+co2mean<-aggregate(all[,3:4],list(tiefe=all$tiefe,treatment=all$treatment),function(x) mean(x,na.rm = T))
+co2mean_dist<-aggregate(alldist[,3:4],list(tiefe=alldist$tiefe,treatment=alldist$treatment),function(x) mean(x,na.rm = T))
+co2mean$sample<-"undist"
+co2mean_dist$sample<-"dist"
+co2mean<-rbind(co2mean,co2mean_dist)
+caco2<-merge(co2mean,icmean)
+caco2$sample<-gsub("dist","gestört",caco2$sample)
+ggplot(caco2)+geom_smooth(aes(ca,CO2_raw,col=sample),method = "lm")+geom_point(aes(ca,CO2_raw,col=sample))+labs(x=expression("Ca"^{"2+"}*"  [mg / l]"),y=expression("CO"[2]*"  [ppm]"),col="Probe")+ggsave(paste0(plotpfad,"ca_co2.pdf"),width=7,height = 4)
 
+
+ggplot(caco2)+geom_point(aes(ca,tiefe,col=CO2_raw))+facet_wrap(~sample)
+
+
+ggplot()+geom_point()
+
+sub_l<-lapply(all_list, function(x) merge(data.frame(date=x$date[x$tiefe==-14],co2=x$CO2_raw[x$tiefe==-14]),data.frame(date=x$date[x$tiefe==-17],q=x$q_interpol[x$tiefe==-17])))
+treat<-lapply(all_list,function(x) mean(x$treatment,na.rm = T))
+treat<-do.call("c",treat)
+co2q<-lapply(sub_l,function(x) mean(x$co2*x$q/sum(x$q,na.rm = T),na.rm = T))#ppm*ml/min
+
+co2q2<-lapply(sub_l,function(x) mean(x$co2*ifelse(is.na(x$q),NA,1),na.rm = T))#ppm
+
+co2qmat<-do.call("c",co2q)
+co2qmat2<-do.call("c",co2q2)
+par(mfrow=c(1,2))
+plot(treat,co2qmat)
+plot(treat,co2qmat2)
+par(mfrow=c(1,1))
 ####################################################
 #plots ca ~ intensität
 
 #min mean und max von ca über tiefe treat und probe aggregieren
-icquant<-aggregate(ic[,c(3,10)],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),function(x) quantile(x,c(0,0.5,1)))
+icquant<-aggregate(ic[,c(3,10)],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),function(x) quantile(x,c(0,1)))
+icmean<-aggregate(ic[,c(3,10)],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),function(x) mean(x))
 
 
 caquant<-icquant$ca
 camgquant<-icquant$ca_mg
 icquant$ca_0<-caquant[,1]
-icquant$ca_50<-caquant[,2]
-icquant$ca_100<-caquant[,3]
+icquant$ca_50<-icmean$ca
+icquant$ca_100<-caquant[,2]
 
 icquant$camg_0<-camgquant[,1]
-icquant$camg_50<-camgquant[,2]
-icquant$camg_100<-camgquant[,3]
+icquant$camg_50<-icmean$ca_mg
+icquant$camg_100<-camgquant[,2]
 
 icquantrange<-rbind(icquant,icquant[nrow(icquant):1,])
 
