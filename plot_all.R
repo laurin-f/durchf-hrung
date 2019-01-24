@@ -132,7 +132,7 @@ plot_all<-function(data,#datensatz
   }else{
     #ansonsten wird der plot angezeigt    
     if(show.legend==T){
-  return(grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA))))
+  return(grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,16),2,3),c(rep(1,16),NA,3))))
     }else{
       return(p)}
 }

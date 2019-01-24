@@ -106,7 +106,6 @@ alldist_s<-alldist[alldist$date>=min(range_alldist_s)&alldist$date<=max(range_al
 
 #speichern der Datensätze in all.R
 save(all,all_s,alldist,alldist_s,all_list,file="C:/Users/ThinkPad/Documents/Masterarbeit/daten/all.R")
-plot(alldist_s$CO2_raw)
 
 
 

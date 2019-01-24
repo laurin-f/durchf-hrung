@@ -155,8 +155,6 @@ ggplot(caco2)+geom_smooth(aes(ca,CO2_raw,col=sample),method = "lm")+geom_point(a
 ggplot(caco2)+geom_point(aes(ca,tiefe,col=CO2_raw))+facet_wrap(~sample)
 
 
-ggplot()+geom_point()
-
 sub_l<-lapply(all_list, function(x) merge(data.frame(date=x$date[x$tiefe==-14],co2=x$CO2_raw[x$tiefe==-14]),data.frame(date=x$date[x$tiefe==-17],q=x$q_interpol[x$tiefe==-17])))
 treat<-lapply(all_list,function(x) mean(x$treatment,na.rm = T))
 treat<-do.call("c",treat)
@@ -166,10 +164,19 @@ co2q2<-lapply(sub_l,function(x) mean(x$co2*ifelse(is.na(x$q),NA,1),na.rm = T))#p
 
 co2qmat<-do.call("c",co2q)
 co2qmat2<-do.call("c",co2q2)
+
+co2treat<-data.frame(co2=co2qmat2,co2_q=co2qmat,treat=treat)
+co2_q1<-ggplot(co2treat,aes(treat,co2))+geom_smooth(method = glm)+geom_point()+theme_classic()+labs(x="Intensität [mm / h]",y=expression("CO"[2]*"  [ppm]"))
+co2_q2<-ggplot(co2treat,aes(treat,co2_q))+geom_smooth(method = lm)+geom_point()+theme_classic()+labs(x="Intensität [mm / h]",y=expression(CO[2]*"%q"*"  [ppm"[norm]*"]"))
+pdf(paste0(plotpfad,"co2_int.pdf"),width=7,height=4)
+gridExtra::grid.arrange(co2_q1,co2_q2,ncol=2)
+dev.off()
+
 par(mfrow=c(1,2))
 plot(treat,co2qmat)
 plot(treat,co2qmat2)
 par(mfrow=c(1,1))
+
 ####################################################
 #plots ca ~ intensität
 
