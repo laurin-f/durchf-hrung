@@ -7,7 +7,7 @@ read_teta<-function(name=0,#dateiname ohne .dat endung
                     #a0 & a1 = koeffizienten für die berechnung von theta aus der Spannung in V 
                     a0=1.3,
                     a1=7.8,
-                    offset=c(0.03597042,0.03995589,0.04884653,0.01169276),#korrektur der Abweichung der Sonden
+                    offset=c(0.03597042,0.03995589,0.04884653,0.01169276),#korrektur der Abweichung der Sonden gemäß teta_kalibrierung.R
                     long_format=T){#wenn TRUE dann wird die eingelesene Matrix ins long format gebracht
   #einlesen der csv datei
   data<-read.csv(paste0(pfad,name,".dat"),header = F)

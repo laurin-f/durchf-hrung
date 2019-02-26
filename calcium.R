@@ -116,19 +116,6 @@ ic_poly$ca<-c(icrange$ca[,1],rev(icrange$ca[,2]))
 #farben für plots
 cols<-scales::hue_pal()(3)
 
-#namensvektor für label erstellen
-names<-paste("Intensität =",unique(ic$treatment),"mm/h")
-names[c(1,2)]<-paste(unique(ic$treatment)[c(1,2)],"mm/h")
-named<-setNames(names,unique(ic$treatment))
-
-#ca tiefenprofil nach intensität aufgeteilt
-ggplot()+
-  geom_path(data=icmean,aes(ca,tiefe,col=sample))+
-  geom_point(data=subset(ic,!is.na(rain_mm_h)),aes(ca,tiefe,col=sample))+
-  facet_wrap(~treatment,labeller = as_labeller(named))+labs(x=expression("Ca"^{"2+"}*"  [mg / l]"),y="Tiefe [cm]",col="Probe")+
-  theme_bw()+
-  ggsave(paste0(plotpfad,"ca_tiefenprofil2.pdf"),width = 8,height = 6)
-
 #ca tiefenprofil nach Probe aufgeteilt
 ggplot()+
   geom_polygon(data=ic_poly,aes(ca,tiefe,fill=as.factor(treatment)),col=0,alpha=0.2,show.legend = F)+
@@ -141,71 +128,6 @@ ggplot()+
   theme_bw()+
   ggsave(paste0(plotpfad,"ca_tiefenprofil.pdf"),width = 7,height = 4)
 
-#Co2 mittelwerte der unterschiedlichen Tiefenstufen von dist und undist Probe
-co2mean<-aggregate(all[,3:4],list(tiefe=all$tiefe,treatment=all$treatment),function(x) mean(x,na.rm = T))
-co2mean_dist<-aggregate(alldist[,3:4],list(tiefe=alldist$tiefe,treatment=alldist$treatment),function(x) mean(x,na.rm = T))
-co2mean$sample<-"undist"
-co2mean_dist$sample<-"dist"
-co2mean<-rbind(co2mean,co2mean_dist)
-caco2<-merge(co2mean,icmean)
-caco2$sample<-gsub("dist","gestört",caco2$sample)
-ggplot(caco2)+geom_smooth(aes(ca,CO2_raw,col=sample),method = "lm")+geom_point(aes(ca,CO2_raw,col=sample))+labs(x=expression("Ca"^{"2+"}*"  [mg / l]"),y=expression("CO"[2]*"  [ppm]"),col="Probe")+ggsave(paste0(plotpfad,"ca_co2.pdf"),width=7,height = 4)
-
-
-ggplot(caco2)+geom_point(aes(ca,tiefe,col=CO2_raw))+facet_wrap(~sample)
-
-
-sub_l<-lapply(all_list, function(x) merge(data.frame(date=x$date[x$tiefe==-14],co2=x$CO2_raw[x$tiefe==-14]),data.frame(date=x$date[x$tiefe==-17],q=x$q_interpol[x$tiefe==-17])))
-treat<-lapply(all_list,function(x) mean(x$treatment,na.rm = T))
-treat<-do.call("c",treat)
-co2q<-lapply(sub_l,function(x) mean(x$co2*x$q/sum(x$q,na.rm = T),na.rm = T))#ppm*ml/min
-
-co2q2<-lapply(sub_l,function(x) mean(x$co2*ifelse(is.na(x$q),NA,1),na.rm = T))#ppm
-
-co2qmat<-do.call("c",co2q)
-co2qmat2<-do.call("c",co2q2)
-
-co2treat<-data.frame(co2=co2qmat2,co2_q=co2qmat,treat=treat)
-co2_q1<-ggplot(co2treat,aes(treat,co2))+geom_smooth(method = glm)+geom_point()+theme_classic()+labs(x="Intensität [mm / h]",y=expression("CO"[2]*"  [ppm]"))
-co2_q2<-ggplot(co2treat,aes(treat,co2_q))+geom_smooth(method = lm)+geom_point()+theme_classic()+labs(x="Intensität [mm / h]",y=expression(CO[2]*"%q"*"  [ppm"[norm]*"]"))
-pdf(paste0(plotpfad,"co2_int.pdf"),width=7,height=4)
-gridExtra::grid.arrange(co2_q1,co2_q2,ncol=2)
-dev.off()
-
-par(mfrow=c(1,2))
-plot(treat,co2qmat)
-plot(treat,co2qmat2)
-par(mfrow=c(1,1))
-
-####################################################
-#plots ca ~ intensität
-
-#min mean und max von ca über tiefe treat und probe aggregieren
-icquant<-aggregate(ic[,c(3,10)],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),function(x) quantile(x,c(0,1)))
-icmean<-aggregate(ic[,c(3,10)],list(treatment=ic$treatment,tiefe=ic$tiefe,sample=ic$sample),function(x) mean(x))
-
-
-caquant<-icquant$ca
-camgquant<-icquant$ca_mg
-icquant$ca_0<-caquant[,1]
-icquant$ca_50<-icmean$ca
-icquant$ca_100<-caquant[,2]
-
-icquant$camg_0<-camgquant[,1]
-icquant$camg_50<-icmean$ca_mg
-icquant$camg_100<-camgquant[,2]
-
-icquantrange<-rbind(icquant,icquant[nrow(icquant):1,])
-
-icquantrange$ca<-c(icquant$ca_0,rev(icquant$ca_100))
-icquantrange$ca_mg<-c(icquant$camg_0,rev(icquant$camg_100))
-
-gest<-setNames(c("gestört","ungestört"),c("dist","undist"))
-ggplot()+geom_polygon(data=icquantrange,aes(treatment,ca,fill=as.factor(tiefe)),col=0,alpha=0.2,show.legend = F)+geom_line(data=icquant,aes(treatment,ca_50,col=as.factor(tiefe)))+geom_point(data=ic,aes(rain_mm_h,ca,col=as.factor(tiefe)))+facet_wrap(~sample,labeller = as_labeller(gest),scales = "fixed")+labs(y=expression("Ca"^{"2+"}*"  [mg / l]"),x=expression("Intensität [mm / h]"),col="Tiefe [cm]")+theme_bw()+ggsave(paste0(plotpfad,"ca_int.pdf"),width = 7,height = 4)
-
-ggplot(ic)+geom_polygon(data=icquantrange,aes(treatment,ca_mg,fill=as.factor(tiefe)),col=0,alpha=0.2,show.legend = F)+geom_line(data=icquant,aes(treatment,camg_50,col=as.factor(tiefe)))+geom_point(aes(rain_mm_h,ca_mg,col=as.factor(tiefe)))+facet_wrap(~sample,labeller = as_labeller(gest))+labs(y=expression("Ca"^{"2+"}*"  [mg]"),x=expression("Intensität [mm / h]"),col="Tiefe [cm]")+theme_bw()+ggsave(paste0(plotpfad,"ca_int_mg.pdf"),width = 7,height = 4)
-
-
 ##############################################
-#datensatz und regression in r object speichern
+#datensatz und regression als R object speichern
 save(ic,cafm,file=paste0(capath,"cafm.R"))

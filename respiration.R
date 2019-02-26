@@ -115,7 +115,7 @@ volprobe<-4^3
 Vol<-1.803*1000-volprobe
 
 #umrechunung der Einheit
-resp_dist<-slope*Vol/A/10^6#ppm/min/cm2
+resp_dist<-slope*Vol/A/10^6#ppm/min/cm2 -> cm3*cm3/cm3/cm2/min -> cm/min
 
 
 #######################

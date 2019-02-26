@@ -123,7 +123,7 @@ plot_all<-function(data,#datensatz
     if(show.legend==T){
     pdf(paste0(plotpfad,name,".pdf"),width = width,height = height)
 
-      grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,11),2),c(rep(1,11),NA)))    
+      grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,16),2,3),c(rep(1,16),NA,3)))    
       dev.off()
     }else{
       p+ggsave(paste0(plotpfad,name,".pdf"),width = width,height = height)
