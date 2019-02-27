@@ -263,10 +263,11 @@ range_dist<-data.frame(co2=c(co2range_dist[2:5,2][,1],rev(co2range_dist[2:5,2][,
 
 #CO2 tiefenprofil plot
 ggplot()+
-  geom_path(data=co2mean[2:5,],aes(x,Group.1,col="ungestört"))+geom_path(data=co2mean_dist[2:5,],aes(x,Group.1,col="gestört"))+
   geom_polygon(data=range_undist,aes(co2,tiefe,fill="ungestört"),col=0,alpha=0.3,show.legend = F)+
   geom_polygon(data=range_dist,aes(co2,tiefe,fill="gestört"),col=0,alpha=0.3,show.legend = F)+
+  geom_path(data=co2mean[2:5,],aes(x,Group.1,col="ungestört"))+
+  geom_path(data=co2mean_dist[2:5,],aes(x,Group.1,col="gestört"))+
   labs(x=expression("CO"[2]*"  [ppm]"),y="Tiefe [cm]",col="")+
   theme_classic()+
-  ggsave(paste0(plotpfad,"co2_tiefenprofil.pdf"),width=6,height = 4.5)
+  ggsave(paste0(plotpfad,"co2_tiefenprofil.pdf"),width=4.5,height = 3)
 
