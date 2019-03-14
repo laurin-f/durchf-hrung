@@ -6,15 +6,19 @@ plot_all<-function(data,#datensatz
                    name=NULL,#wenn ein name angegeben wird dann wird eine .pdf datei mit diesem namen gespeichert
                    height=9,#höhe der .pdf
                    width=7,#breite der .pdf
-                   point=F,
-                   show.legend=T,
+                   show.legend=T,#soll die legende angezeigt werden
+                   #hier werden die y-Achsenbeschriftungen eingestellt
                    ylabs=c(expression("CO"[2]*"  [ppm]"),
-                           expression(theta*"  [VOl %]"),
+                           expression(theta*" [cm"^3/cm^3*"]"),
                            expression("LF  ["*mu*"S / cm]"),
                            expression("q  [ml / min]")),
+                   #soll die y-Achse angezeigt werden
                    scale=T,
+                   #untere Grenze der y-Achse für die LF werte
                    lfmin=250,
-                   date_breaks=T){#wenn point =T dann werden für den Plot Punkte anstatt Linien verwendet
+                   #wenn date_breaks=T wird das Datum auf der x-Achse manuell 
+                   #alle 2 Tage angezeigt
+                   date_breaks=T){
   #package für schöne plots
   library(ggplot2)
   #packages um plots zu arrangieren
@@ -27,19 +31,24 @@ plot_all<-function(data,#datensatz
   #zeitspanne in der beregnet wurde
   event<-subset(events,start>=min(data$date)&stop<=max(data$date))
   day<-as.numeric(format(data$date,"%d"))
+  
+  ##########################################
   #plot der CO2 daten 
+  ##########################################
   co2_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf,fill=""), alpha = 0.15)+
     labs(y=ylabs[1],x="",col="Tiefe [cm]")+
     theme_classic()+scale_fill_manual(name="Beregnung",values="blue")+
     geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(x=date,y=CO2_raw,col=as.factor(tiefe)),na.rm = T)
   
+  #wenn date_breaks=T wird das Datum auf der x-Achse manuell 
+  #alle 2 Tage angezeigt
   if(date_breaks==T){
   co2_plot<-co2_plot+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))
   }else{
     co2_plot<-co2_plot+scale_x_datetime(limits = range(data$date))
   }
-
+  #wenn scale == F wird die x-Achse entfernt
   if(scale==F){
     co2_plot<-co2_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
   }
@@ -50,7 +59,9 @@ plot_all<-function(data,#datensatz
   co2_plot<-co2_plot+theme(legend.position = "none")
   p<-co2_plot
   
+  ###############################################
   #plot der Bodenfeuchte falls vorhanden
+  ###############################################
   if(length(data$theta)!=0){   
   bf_plot<-ggplot()+
     geom_rect(data=event,aes(xmin=start,xmax=stop,ymin = -Inf, ymax = Inf), alpha = 0.15,fill="blue")+
@@ -58,12 +69,14 @@ plot_all<-function(data,#datensatz
     geom_line(data=subset(data,tiefe!=-17&tiefe!=0),aes(date,theta,col=as.factor(tiefe)),show.legend = F,na.rm = T)+
     theme_classic()
   
+  #wenn date_breaks=T wird das Datum auf der x-Achse manuell 
+  #alle 2 Tage angezeigt
   if(date_breaks==T){
       bf_plot<-bf_plot+scale_x_datetime(breaks=data$date[format(data$date,"%H%M")=="0000"&ifelse(day>10,day%%2==0,day%%2!=0)], date_labels = "%d%b",limits = range(data$date))+theme(axis.text.x = element_blank())
   }else{
     bf_plot<-bf_plot+scale_x_datetime(limits = range(data$date))
   }
-  
+  #wenn scale == F wird die x-Achse entfernt
   if(scale==F){
     bf_plot<-bf_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
   }
@@ -71,7 +84,9 @@ plot_all<-function(data,#datensatz
   p<-plot_grid(co2_plot,bf_plot,align = "v",ncol=1,rel_heights = c(1,1))
   }
   
+  ##############################################################
   #plot der Leitfähigkeit falls vorhanden
+  ##############################################################
   if(length(data$lf)!=0){  
     lf_plot<-ggplot()+
       geom_line(data=subset(data,tiefe==-17),aes(date,lf),show.legend = F,na.rm = T)+
@@ -87,7 +102,9 @@ plot_all<-function(data,#datensatz
     p<-plot_grid(co2_plot,bf_plot,lf_plot,align = "v",ncol=1,rel_heights = c(1,1,1))
   }
 
+  ###################################################################
   #plot der Abflussdaten falls vorhanden
+  ###################################################################
   if(length(data$q)!=0){ 
       q_plot<-ggplot()+
         geom_line(data=subset(data,tiefe==-17),aes(date,q_interpol),show.legend = F,na.rm = T)+
@@ -102,13 +119,13 @@ plot_all<-function(data,#datensatz
       #vertikalarrangement der drei plots mit übereinstimmender x-achse
       p<-plot_grid(co2_plot,bf_plot,q_plot,align = "v",ncol=1,rel_heights = c(2,1,1))
   }
-  
+  #wenn scale == F wird die x-Achse entfernt
   if(scale==F){
     lf_plot<-lf_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
-  }
-  if(scale==F){
+    
     q_plot<-q_plot+theme(axis.text.y = element_blank(),axis.ticks.y = element_blank(),axis.line.y = element_blank())
   }
+  
   #falls alle Vier datensätze vorliegen
   if(length(data$q)!=0 & length(data$lf)!=0){
     #vertikalarrangement der vier plots mit übereinstimmender x-achse
@@ -130,9 +147,11 @@ plot_all<-function(data,#datensatz
     }
 
   }else{
-    #ansonsten wird der plot angezeigt    
+    #ansonsten wird der plot angezeigt 
+    #entweder mit legende
     if(show.legend==T){
   return(grid.arrange(p,leg,layout_matrix=rbind(c(rep(1,16),2,3),c(rep(1,16),NA,3))))
+    #oder ohne legende
     }else{
       return(p)}
 }

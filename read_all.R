@@ -7,7 +7,7 @@ read_all<-function(datum,#datum des Versuchs
                    q_filter=3,#zellenweite des gleitenden mittels für q
                    lfs=T){#sind Leitfähigkeitswerte nicht verfügbar lfs=F einstellen
   #auführen der R-skripte für die benötigten Funktionen
-  source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/Versuchsdesign/read_vaisala.R")
+  source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_vaisala.R")
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_teta.R")
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/waage.R")
   source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")

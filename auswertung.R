@@ -3,7 +3,7 @@
 #auswertung der Versuche
 
 #auführen der R-skripte für die benötigten Funktionen
-source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/Versuchsdesign/read_vaisala.R")
+source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_vaisala.R")
 source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/read_teta.R")
 source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/waage.R")
 source("C:/Users/ThinkPad/Documents/Masterarbeit/rcode/durchf-hrung/event.R")
@@ -119,10 +119,9 @@ library(ggplot2)
 #events laden
 events<-event()
 
-
+#vektor mit Farben
 cols<-scales::hue_pal()(3)
 
-??hue_pal
 #namen vektor für labeller
 named_tief<-setNames(as.character(c("Tiefe= -2 cm","-6 cm","-10 cm","-14 cm")),c(2,6,10,14))
 
@@ -218,10 +217,10 @@ plot_all(dez11)
 plot_all(dez17)
 
 #zusammengefasste Events
-plot_all(all[,1:6])#,name="alle",height = 6)
+plot_all(all[,1:6])
 p<-plot_all(all,date_breaks = F)
 plot_all(all,name="alle_alles",height = 8,date_breaks = F)
-plot_all(all_s)#,name="3850_alles",height = 6)
+plot_all(all_s)
 plot_all(alldist,name="alledist",height=8,date_breaks = F)
 
 #Ausgewählte Events für die Arbeit
@@ -244,7 +243,7 @@ dev.off()
 ggplot(all,aes(date,temp,col=as.factor(tiefe)))+geom_point()
 
 ggplot(alldist,aes(date,temp,col=as.factor(tiefe)))+geom_point()
-
+#schwankt nur um 1-2 °c
 ##############################################################
 #tiefenprofil plot
 ##############################################################

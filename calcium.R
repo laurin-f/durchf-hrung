@@ -88,10 +88,11 @@ ic<-subset(ic,round(rain_mm_h)!=16)
 #spalte treatment als gerundete intensität
 ic$treatment<-round(ic$rain_mm_h)
 
-#datum formatieren
-ic$datum<-parse_date_time(paste0(2018,ic$datum),"ydm")
+
 #alle versuche vor dem 29.11. waren mit der ungestörten Probe danach die gestörte
 ic$sample<-ifelse(parse_date_time(ic$datum,"dm")>="0000-11-29 UTC","dist","undist")
+#datum formatieren
+ic$datum<-parse_date_time(paste0(2018,ic$datum),"ydm")
 
 #Wassermengenwerte an IC datensatz anhängen
 ic<-merge(ic,wassermenge[,c(1,4,5)])

@@ -1,8 +1,8 @@
 ###############################################
 #Funktion um die Events zu speichern
-#hallo laurin
+
 event<-function(pfad="C:/Users/ThinkPad/Documents/Masterarbeit/daten/events/"){
-  #packege für datumsformatierung
+  #package für datumsformatierung
   library(lubridate)
   #package um .xlsx dateien  einzulesen
   library(readxl)
